@@ -1,5 +1,11 @@
 # Cambios
 
+## v3.2
+- Modo alemán (activado por defecto, se desactiva en Ajustes): consignas, botones y resultados en alemán; botón «🌐 Übersetzen» con la traducción y las palabras clave; la explicación en español queda plegada y se abre sola si fallas.
+- Nuevo grupo «Auf Deutsch: Verben anwenden»: unas 860 preguntas en alemán con los verbos de las lecciones 1 a 7 en frases (todas las personas), pasar a Perfekt, añadir können o wollen, empezar con «Heute», hacer preguntas, cambiar la persona, tablas de conjugación completas y situaciones («Was sagst du?»).
+- Portada: «Konjugationstrainer» y «Nur Deutsch». En los repasos mezclados, 40 % de preguntas de verbos y como máximo 15 % de «qué significa».
+- Corregida la conjugación de zeichnen (du zeichnest, er zeichnet). Audios para las frases nuevas.
+
 ## v3.1
 - Audio con voz alemana grabada (Piper «thorsten», licencia CC0) para todo el alemán de la app: suena bien en cualquier PC sin instalar voces de Windows.
 - Si falta un audio, se usa la voz del dispositivo solo si es alemana (antes podía leer con la voz en español).

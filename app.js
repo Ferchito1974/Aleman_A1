@@ -77,7 +77,8 @@ function pick(list, n) {
   return shuffle(scored.slice(0, n).map(x => x.q));
 }
 function startQuiz(title, list, n, back) {
-  const chosen = pick(list, Math.min(n, list.length));
+  const mixed = new Set(list.map(q => q.level)).size > 1; // v3.2: en repasos mezclados, más verbos y menos «qué significa»
+  const chosen = mixed && typeof pickBalanced === 'function' ? pickBalanced(list, Math.min(n, list.length)) : pick(list, Math.min(n, list.length));
   if (!chosen.length) return;
   S.quiz = { title, back: back || 'home', queue: chosen.map(q => ({ q, retry: 0 })), total: chosen.length, firstDone: 0, firstOk: 0, missed: [], tagMiss: {}, fb: null, st: null };
   initState();
@@ -89,6 +90,7 @@ function initState() {
   if (q.kind === 'mc') Q.st = { order: shuffle(q.opts) };
   else if (q.kind === 'build') Q.st = { bank: shuffle(q.tokens.concat(q.extra || [])).map((t, i) => ({ t, i })), placed: [] };
   else Q.st = {};
+  Q.st.tr = false; // v3.2: traducción cerrada al empezar cada pregunta
 }
 
 /* ---------- respuesta, pronunciación y feedback ---------- */
@@ -164,7 +166,9 @@ function viewHome() {
     '</div></header>';
   const qa = (act, ex, n, icon, title, sub, cls, dis) => '<button class="qa' + (cls ? ' ' + cls : '') + '" data-act="' + act + '"' + (ex ? ' data-ex="' + ex + '"' : '') + (n ? ' data-n="' + n + '"' : '') + (dis ? ' disabled' : '') + '><span class="qi" aria-hidden="true">' + icon + '</span><span><b>' + title + '</b><small>' + sub + '</small></span></button>';
   h += '<section class="quick" aria-label="Repasos y herramientas">' +
-    qa('mix', '3', 25, '🆕', 'Repaso lección 7', '25 preguntas · ' + p3.pct + '%', 'primary') +
+    qa('konj', '', 30, '🔁', 'Konjugationstrainer', 'Verbos en frases, 30 preguntas', 'primary') +
+    qa('deonly', '', 25, '✍️', 'Nur Deutsch', 'Solo preguntas en alemán') +
+    qa('mix', '3', 25, '🆕', 'Repaso lección 7', '25 preguntas · ' + p3.pct + '%') +
     qa('mix', '2', 25, '🏠', 'Repaso lecciones 4 a 6', '25 preguntas · ' + p2.pct + '%') +
     qa('mix', '1', 25, '👋', 'Repaso lecciones 1 a 3', '25 preguntas · ' + p1.pct + '%') +
     qa('mix', 'all', 60, '🏁', 'Simulacro final', '60 preguntas de todo') +
@@ -183,6 +187,7 @@ function viewHome() {
     h += '</div>';
   });
   h += '<h2 class="sec">Ajustes y progreso</h2><div class="card"><label class="chk"><input type="checkbox" data-act="strict"' + (store.set.strict ? ' checked' : '') + '> Modo estricto: una errata o una mayúscula olvidada cuenta como error</label>' +
+    '<label class="chk"><input type="checkbox" data-act="demode"' + (deMode() ? ' checked' : '') + '> Preguntas en alemán (con botón 🌐 Übersetzen para ver la traducción)</label>' +
     '<p class="muted small">Sin modo estricto, las mayúsculas, las diéresis y las erratas de una letra se aceptan pero te muestro qué corregir.</p>' +
     '<div class="row"><button class="btn small" data-act="export">Exportar progreso</button><button class="btn small" data-act="import">Importar progreso</button><button class="btn small ghost" data-act="reset">Borrar progreso</button></div>' +
     '<input type="file" id="imp" accept="application/json,.json" hidden>' +
@@ -215,10 +220,17 @@ function pronLine(q) {
 function viewQuiz() {
   const Q = S.quiz; const cur = Q.queue[0]; const q = cur.q;
   const pct = Math.round(100 * Q.firstDone / Q.total);
-  let h = '<div class="qtop"><button class="btn ghost small" data-act="quit">← Salir</button><span class="qt">' + esc(Q.title) + '</span><span class="qc" aria-label="Pregunta ' + Math.min(Q.firstDone + 1, Q.total) + ' de ' + Q.total + '">' + Math.min(Q.firstDone + 1, Q.total) + ' / ' + Q.total + (cur.retry ? ' · repaso' : '') + '</span></div>' + bar(pct, 'session');
+  const DE = deMode(); const V = DE ? deView(q) : null; // v3.2: presentación en alemán
+  const L = DE ? { quit: '← Beenden', rev: 'Wiederholung', check: 'Prüfen', idk: 'Weiß ich nicht', clear: 'Löschen', next: 'Weiter', ph: 'Deine Antwort', hint: 'Tippe die Wörter in der richtigen Reihenfolge an', sol: 'Lösung', why: 'Erklärung (español)', again: 'Diese Frage kommt gleich noch einmal.' }
+    : { quit: '← Salir', rev: 'Repaso', check: 'Comprobar', idk: 'No sé', clear: 'Borrar', next: 'Siguiente', ph: 'Tu respuesta', hint: 'Toca las palabras de abajo en orden', sol: 'Respuesta', why: 'Por qué', again: 'Esta pregunta volverá a aparecer en unos minutos.' };
+  let h = '<div class="qtop"><button class="btn ghost small" data-act="quit">' + L.quit + '</button><span class="qt">' + esc(Q.title) + '</span><span class="qc" aria-label="Pregunta ' + Math.min(Q.firstDone + 1, Q.total) + ' de ' + Q.total + '">' + Math.min(Q.firstDone + 1, Q.total) + ' / ' + Q.total + (cur.retry ? ' · ' + L.rev.toLowerCase() : '') + '</span></div>' + bar(pct, 'session');
   const cls = (Q.fb ? (Q.fb.ok ? (Q.fb.almost ? ' almost' : ' ok') : ' bad') : '') + (Q.fb && Q.anim ? ' anim-' + Q.anim : '');
-  h += '<div class="qcard' + cls + '">' + (q.tag ? '<span class="chip">' + esc(q.tag) + '</span>' : '') + (cur.retry ? '<span class="chip warn">Repaso</span>' : '');
-  if (q.kind === 'build') h += '<p class="qq">Ordena las palabras para decir: <b>' + esc(q.es) + '</b></p>';
+  h += '<div class="qcard' + cls + '">' + (q.tag ? '<span class="chip">' + esc(tagDe(q.tag)) + '</span>' : '') + (cur.retry ? '<span class="chip warn">' + L.rev + '</span>' : '');
+  if (DE) {
+    h += '<p class="qq">' + V.html + '</p>';
+    const tb = trBlock(V);
+    if (tb) h += '<button class="trbtn" data-act="tr" aria-expanded="' + (Q.st.tr ? 'true' : 'false') + '">🌐 ' + (Q.st.tr ? 'Übersetzung ausblenden' : 'Übersetzen') + '</button>' + (Q.st.tr ? tb : '');
+  } else if (q.kind === 'build') h += '<p class="qq">Ordena las palabras para decir: <b>' + esc(q.es) + '</b></p>';
   else h += '<p class="qq">' + q.q + '</p>';
   if (q.kind === 'mc') {
     h += '<div class="opts">' + Q.st.order.map((o, i) => {
@@ -227,21 +239,22 @@ function viewQuiz() {
       return '<button class="' + c + '" data-act="mc" data-i="' + i + '"' + (Q.fb ? ' disabled' : '') + '>' + esc(o) + '</button>';
     }).join('') + '</div>';
   } else if (q.kind === 'type') {
-    h += '<div class="typebox"><input id="ans" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="Tu respuesta" value="' + esc(Q.st.val || '') + '"' + (Q.fb ? ' disabled' : '') + '>' +
-      (Q.fb ? '' : '<div class="keys">' + ['ä', 'ö', 'ü', 'ß'].map(c => '<button class="key" data-act="ins" data-c="' + c + '">' + c + '</button>').join('') + '</div><div class="row"><button class="btn primary" data-act="check">Comprobar</button><button class="btn ghost" data-act="idk">No sé</button></div>') + '</div>';
+    h += '<div class="typebox"><input id="ans" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="' + L.ph + '" value="' + esc(Q.st.val || '') + '"' + (Q.fb ? ' disabled' : '') + '>' +
+      (Q.fb ? '' : '<div class="keys">' + ['ä', 'ö', 'ü', 'ß'].map(c => '<button class="key" data-act="ins" data-c="' + c + '">' + c + '</button>').join('') + '</div><div class="row"><button class="btn primary" data-act="check">' + L.check + '</button><button class="btn ghost" data-act="idk">' + L.idk + '</button></div>') + '</div>';
   } else {
-    h += '<div class="placed" id="placed">' + (Q.st.placed.length ? Q.st.placed.map(k => '<button class="tok" data-act="unplace" data-k="' + k + '"' + (Q.fb ? ' disabled' : '') + '>' + esc(Q.st.bank.find(b => b.i === k).t) + '</button>').join('') : '<span class="hint">Toca las palabras de abajo en orden</span>') + '</div>';
+    h += '<div class="placed" id="placed">' + (Q.st.placed.length ? Q.st.placed.map(k => '<button class="tok" data-act="unplace" data-k="' + k + '"' + (Q.fb ? ' disabled' : '') + '>' + esc(Q.st.bank.find(b => b.i === k).t) + '</button>').join('') : '<span class="hint">' + L.hint + '</span>') + '</div>';
     h += '<div class="bank">' + Q.st.bank.filter(b => !Q.st.placed.includes(b.i)).map(b => '<button class="tok" data-act="place" data-k="' + b.i + '"' + (Q.fb ? ' disabled' : '') + '>' + esc(b.t) + '</button>').join('') + '</div>';
-    if (!Q.fb) h += '<div class="row"><button class="btn primary" data-act="checkb"' + (Q.st.placed.length ? '' : ' disabled') + '>Comprobar</button><button class="btn ghost" data-act="clear">Borrar</button><button class="btn ghost" data-act="idkb">No sé</button></div>';
+    if (!Q.fb) h += '<div class="row"><button class="btn primary" data-act="checkb"' + (Q.st.placed.length ? '' : ' disabled') + '>' + L.check + '</button><button class="btn ghost" data-act="clear">' + L.clear + '</button><button class="btn ghost" data-act="idkb">' + L.idk + '</button></div>';
   }
   if (Q.fb) {
-    const verdict = Q.fb.ok ? (Q.fb.almost ? 'Casi, pero se acepta' : 'Correcto') : (Q.fb.almost ? 'Casi, pero en modo estricto cuenta como error' : 'Todavía no');
+    const verdict = DE ? (Q.fb.ok ? (Q.fb.almost ? 'Fast richtig!' : 'Richtig!') : 'Leider falsch.') : (Q.fb.ok ? (Q.fb.almost ? 'Casi, pero se acepta' : 'Correcto') : (Q.fb.almost ? 'Casi, pero en modo estricto cuenta como error' : 'Todavía no'));
     const vicon = Q.fb.ok ? (Q.fb.almost ? '≈' : '✓') : '✗';
     h += '<div class="fb ' + (Q.fb.ok ? (Q.fb.almost ? 'almost' : 'ok') : 'bad') + '" role="status" aria-live="polite"><p class="verdict"><span class="vi" aria-hidden="true">' + vicon + '</span>' + verdict + '</p>' +
-      (Q.fb.ok && q.kind === 'mc' ? '' : '<p class="ca">Respuesta: <b>' + esc(Q.fb.shown) + '</b></p>') +
-      (Q.fb.note ? '<p class="note">' + esc(Q.fb.note) + '</p>' : '') + pronLine(q) +
-      '<p class="why"><b>Por qué:</b> ' + q.why + '</p>' + (Q.fb.willRepeat ? '<p class="note">Esta pregunta volverá a aparecer en unos minutos.</p>' : '') +
-      '<button class="btn primary wide" id="nextbtn" data-act="next">Siguiente</button></div>';
+      (Q.fb.ok && q.kind === 'mc' ? '' : '<p class="ca">' + L.sol + ': <b>' + esc(Q.fb.shown) + '</b></p>') + pronLine(q) +
+      (DE ? '<details class="whybox"' + (Q.fb.ok && !Q.fb.almost ? '' : ' open') + '><summary>' + L.why + '</summary>' + (Q.fb.note ? '<p class="note">' + esc(Q.fb.note) + '</p>' : '') + '<p class="why">' + q.why + '</p></details>'
+        : (Q.fb.note ? '<p class="note">' + esc(Q.fb.note) + '</p>' : '') + '<p class="why"><b>Por qué:</b> ' + q.why + '</p>') +
+      (Q.fb.willRepeat ? '<p class="note">' + L.again + '</p>' : '') +
+      '<button class="btn primary wide" id="nextbtn" data-act="next">' + L.next + '</button></div>';
   }
   return h + '</div>';
 }
@@ -348,7 +361,10 @@ document.addEventListener('click', e => {
   else if (a === 'start') { const l = LEVELS.find(x => x.id === S.level); S.last = { title: 'Nivel ' + l.n + ': ' + l.title, ids: [l.id], n: +t.dataset.n, back: 'level' }; startQuiz(S.last.title, pool(l.id), S.last.n, 'level'); }
   else if (a === 'mix') { const ex = t.dataset.ex; const names = { 1: 'Repaso lecciones 1 a 3', 2: 'Repaso lecciones 4 a 6', 3: 'Repaso lección 7', all: 'Simulacro final' }; S.last = { title: names[ex], ids: levelsBy(ex).map(l => l.id), n: +t.dataset.n, back: 'home' }; startQuiz(S.last.title, poolOf(ex), S.last.n, 'home'); }
   else if (a === 'errors') { const m = allPool().filter(isMissed); S.last = { title: 'Mis errores', ids: LEVELS.map(l => l.id), n: 20, back: 'home', errors: true }; startQuiz('Mis errores', m, 20, 'home'); }
-  else if (a === 'again') { const L = S.last; const list = L.errors ? allPool().filter(isMissed) : L.ids.flatMap(id => pool(id)); if (!list.length) go('home'); else startQuiz(L.title, list, L.n, L.back); }
+  else if (a === 'konj' || a === 'deonly') { const f = a === 'konj' ? (q => q.tag === 'Conjugación' || (q.de && q.tag !== 'Situationen')) : (q => q.de); const title = a === 'konj' ? 'Konjugationstrainer' : 'Nur Deutsch'; S.last = { title, ids: LEVELS.map(l => l.id), n: +t.dataset.n, back: 'home', filter: a }; startQuiz(title, allPool().filter(f), S.last.n, 'home'); }
+  else if (a === 'tr') { Q.st.tr = !Q.st.tr; render(); }
+  else if (a === 'demode') { store.set.de = t.checked; save(); }
+  else if (a === 'again') { const L = S.last; const FL = { konj: q => q.tag === 'Conjugación' || (q.de && q.tag !== 'Situationen'), deonly: q => q.de }; const list = L.errors ? allPool().filter(isMissed) : L.filter ? allPool().filter(FL[L.filter]) : L.ids.flatMap(id => pool(id)); if (!list.length) go('home'); else startQuiz(L.title, list, L.n, L.back); }
   else if (a === 'chuleta') go('chuleta');
   else if (a === 'pron') go('pron');
   else if (a === 'export') exportProgress();

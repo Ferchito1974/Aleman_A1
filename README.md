@@ -12,6 +12,7 @@ Sitio: **https://ferchito1974.github.io/Aleman_A1/**
 - La Wortliste completa (Lernwortschatz LWS 1 a 26): 603 palabras con artículo, plural, pronunciación y traducción.
 - Temas de la maestra con nivel propio: artículo definido y pronombres, nicht o kein, der o den, ja/nein/doch, hora formal e informal, verbos de la maestra, separables e irregulares, orden de palabras.
 - Lecturas de las lecciones 4 a 6 (anuncios de vivienda, horarios de Berlín, Franziska, cómic, folleto D-A-CH).
+- Modo alemán: preguntas en alemán con botón «🌐 Übersetzen» (traducción y palabras clave). Grupo «Auf Deutsch: Verben anwenden» con verbos en frases, Perfekt, modales y situaciones; Konjugationstrainer.
 - Modo claro y oscuro, racha de estudio y progreso por nivel.
 
 ## Publicar o actualizar en GitHub Pages
@@ -46,6 +47,8 @@ La pronunciación escrita es una aproximación con letras del español (reglas e
 | `content456.js` | Lecturas de las lecciones 4 a 6 y temas de la maestra |
 | `content7.js` | Lección 7 |
 | `content_contexto.js` | Frases con el vocabulario de la Wortliste |
+| `content_deutsch.js` | Preguntas en alemán centradas en los verbos |
+| `ui_de.js` | Presentación del quiz en alemán, traducción y glosario |
 | `levels_v3.js` | Orden e iconos de todos los niveles |
 | `lessons.js` | Textos de repaso de los niveles antiguos |
 | `pron.js`, `check.js` | Pronunciación escrita y voz del dispositivo; corrector de respuestas |

@@ -271,3 +271,17 @@ body.nospeech .spk { display: none; }
   body { background: #fff; }
   .tw, .card, .lv { box-shadow: none; }
 }
+
+/* ---------- v3.2: modo alemán (Übersetzen, glosario y explicación plegable) ---------- */
+.trbtn { font: inherit; font-size: .92rem; font-weight: 650; display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 6px 14px; margin: -4px 0 12px; border-radius: 999px; border: 1px dashed var(--line-2); background: transparent; color: var(--accent); cursor: pointer; }
+.trbtn:hover { border-style: solid; border-color: var(--accent); background: var(--accent-tint); }
+.trbox { background: var(--accent-tint); border: 1px solid var(--accent-soft); border-radius: var(--radius-s); padding: 10px 14px; margin: -4px 0 14px; font-size: .95rem; animation: rise .2s ease-out; }
+.trbox p { margin: .25em 0; }
+.trlab { font-size: .72rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: .5em 0 .2em; }
+.kw { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 4px 14px; }
+.kw li b { color: var(--ink); }
+.kw li span { color: var(--muted); }
+.whybox { margin: .5em 0 .8em; border-top: 1px solid var(--line); padding-top: .4em; }
+.whybox summary { cursor: pointer; font-weight: 700; color: var(--ink-2); min-height: 40px; display: flex; align-items: center; }
+.whybox summary::marker { color: var(--accent); }
+.qq small { color: var(--muted); font-weight: 500; }

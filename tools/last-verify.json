@@ -1,5 +1,47 @@
 [
  {
+  "id": "dv13",
+  "group": "Auf Deutsch: Verben anwenden",
+  "exam": 1,
+  "title": "Verben im Satz: Lektion 1–3",
+  "n": 236
+ },
+ {
+  "id": "dv46",
+  "group": "Auf Deutsch: Verben anwenden",
+  "exam": 2,
+  "title": "Verben im Satz: Lektion 4–6",
+  "n": 434
+ },
+ {
+  "id": "dv7",
+  "group": "Auf Deutsch: Verben anwenden",
+  "exam": 3,
+  "title": "Verben im Satz: Lektion 7",
+  "n": 153
+ },
+ {
+  "id": "dsit13",
+  "group": "Auf Deutsch: Verben anwenden",
+  "exam": 1,
+  "title": "Situationen: Lektion 1–3",
+  "n": 15
+ },
+ {
+  "id": "dsit46",
+  "group": "Auf Deutsch: Verben anwenden",
+  "exam": 2,
+  "title": "Situationen: Lektion 4–6",
+  "n": 15
+ },
+ {
+  "id": "dsit7",
+  "group": "Auf Deutsch: Verben anwenden",
+  "exam": 3,
+  "title": "Situationen: Lektion 7",
+  "n": 10
+ },
+ {
   "id": "l1greet",
   "group": "Lección 1",
   "exam": 1,
