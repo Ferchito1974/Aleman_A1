@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Alemán A1: lecciones 1 a 6</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,500;7..72,700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* Plan: aula alemana impresa. Papel claro, tinta azul noche, acento teal; colores de género del libro (der azul, das verde, die rojo, plural naranja). Una columna, lectura y práctica. */
+:root{
+  --bg:#f6f5f1; --surface:#ffffff; --ink:#1c2430; --muted:#5b6674; --line:#dcd9d0; --accent:#0f6b63; --accent-ink:#ffffff; --accent-soft:#dff0ee;
+  --ok:#1f7a45; --ok-soft:#e1f3e8; --bad:#b3303a; --bad-soft:#fbe6e8; --warn-soft:#fff3d6; --warn:#8a5a00;
+  --m:#2a66d0; --n:#238a4a; --f:#cc3340; --p:#d9801a;
+  --display:'Literata',Georgia,'Times New Roman',serif; --body:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#12171d; --surface:#1a2129; --ink:#e8ecf1; --muted:#9aa6b4; --line:#2c3642; --accent:#58c4b8; --accent-ink:#0c1a18; --accent-soft:#17302d;
+  --ok:#5fd08c; --ok-soft:#15301f; --bad:#ff8a93; --bad-soft:#3a1c20; --warn-soft:#3a2e12; --warn:#f0c060;
+  --m:#7aa7ff; --n:#5fd08c; --f:#ff8a93; --p:#ffb35c; color-scheme:dark;}}
+:root[data-theme="dark"]{
+  --bg:#12171d; --surface:#1a2129; --ink:#e8ecf1; --muted:#9aa6b4; --line:#2c3642; --accent:#58c4b8; --accent-ink:#0c1a18; --accent-soft:#17302d;
+  --ok:#5fd08c; --ok-soft:#15301f; --bad:#ff8a93; --bad-soft:#3a1c20; --warn-soft:#3a2e12; --warn:#f0c060;
+  --m:#7aa7ff; --n:#5fd08c; --f:#ff8a93; --p:#ffb35c; color-scheme:dark;}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55;-webkit-text-size-adjust:100%}
+#app{max-width:760px;margin:0 auto;padding:20px 16px 90px}
+h1,h2,h3,h4{font-family:var(--display);line-height:1.2;text-wrap:balance;margin:0 0 .5em}
+h1{font-size:1.75rem} h2{font-size:1.3rem} h4{font-size:1.05rem;margin-top:1.4em}
+p{margin:.4em 0 .8em} small{color:var(--muted)}
+.eyebrow{font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:600;margin:0 0 .4em}
+.lead{color:var(--muted);max-width:62ch}
+.muted{color:var(--muted)}
+.hero{padding:8px 0 4px}
+.overall{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-top:14px;display:grid;gap:8px}
+.overall b{font-family:var(--display);font-size:1.8rem;margin-right:8px}.overall span{color:var(--muted)}
+.bar{height:8px;background:var(--line);border-radius:99px;overflow:hidden}.bar i{display:block;height:100%;background:var(--accent);border-radius:99px;transition:width .25s}
+.bar.done i{background:var(--ok)}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 6px}
+.btn{font:inherit;font-weight:600;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:10px 14px;border-radius:10px;cursor:pointer;min-height:44px}
+.btn:hover{border-color:var(--accent)} .btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.ghost{background:transparent} .btn.small{min-height:36px;padding:6px 10px} .btn.wide{width:100%}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.sec{margin-top:1.6em}
+.levels{display:grid;gap:10px}
+.lv{display:flex;gap:12px;text-align:left;font:inherit;color:inherit;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer;width:100%}
+.lv:hover{border-color:var(--accent)}
+.num{flex:none;width:34px;height:34px;border-radius:8px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-family:var(--display);font-weight:700}
+.num.big{display:inline-grid;margin-right:10px;vertical-align:middle}
+.lt{display:grid;gap:4px;flex:1;min-width:0}.lt b{font-weight:600}
+.foot{color:var(--muted);font-size:.92rem;margin-top:18px}
+.top{margin-bottom:8px}.lh{display:flex;align-items:center}.sub{color:var(--muted);margin-top:-4px}
+.tabs{display:flex;gap:6px;border-bottom:1px solid var(--line);margin:14px 0 8px}
+.tab{font:inherit;font-weight:600;background:none;border:0;border-bottom:3px solid transparent;padding:10px 12px;color:var(--muted);cursor:pointer}
+.tab.on{color:var(--ink);border-bottom-color:var(--accent)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:10px 0}
+.card.big{text-align:center}.score{font-family:var(--display);font-size:3rem;font-weight:700;color:var(--accent)}
+.row{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.chk{display:flex;gap:8px;align-items:center;font-size:.92rem;color:var(--muted);margin:6px 0 10px}
+.sticky{position:sticky;bottom:0;padding:10px 0;background:linear-gradient(transparent,var(--bg) 30%)}
+.box{background:var(--accent-soft);border-left:4px solid var(--accent);border-radius:8px;padding:10px 14px;margin:12px 0}
+.box.warn{background:var(--warn-soft);border-left-color:var(--warn)}
+.box>b:first-child{display:block;margin-bottom:2px}.box p,.box ul,.box ol{margin:.3em 0}.box ul,.box ol{padding-left:1.2em}
+.tw{overflow-x:auto;margin:8px 0}
+table.t{border-collapse:collapse;width:100%;font-size:.95rem;background:var(--surface)}
+.t th,.t td{border:1px solid var(--line);padding:7px 9px;text-align:left;vertical-align:top}
+.t th{background:var(--accent-soft);font-weight:600;white-space:nowrap}
+.t.conj td:first-child{white-space:nowrap}.t td small{display:block;color:var(--muted)}
+.pr{color:var(--muted);font-style:italic}
+.irr{color:var(--f);font-weight:600}
+.art{font-weight:600}.art.m{color:var(--m)}.art.n{color:var(--n)}.art.f{color:var(--f)}.art.p{color:var(--p)}
+.ex{padding-left:1.1em}.ex li{margin:.3em 0}.de{font-weight:500}.es{color:var(--muted)}
+.hide-es .es[data-reveal]{color:transparent;background:var(--line);cursor:pointer;user-select:none}
+.hide-es .es[data-reveal].show{color:var(--muted);background:transparent}
+.qtop{display:flex;align-items:center;gap:10px;margin-bottom:8px}.qt{flex:1;font-weight:600;font-size:.92rem;color:var(--muted);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.qc{font-variant-numeric:tabular-nums;font-weight:600}
+.qcard{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;margin-top:12px}
+.qcard.ok{border-color:var(--ok)}.qcard.bad{border-color:var(--bad)}
+.chip{display:inline-block;font-size:.75rem;font-weight:600;background:var(--accent-soft);color:var(--accent);border-radius:99px;padding:2px 9px;margin:0 6px 6px 0}
+.chip.warn{background:var(--warn-soft);color:var(--warn)}.chips{display:flex;flex-wrap:wrap}
+.qq{font-size:1.15rem;margin:.4em 0 1em;font-weight:500}
+.opts{display:grid;gap:8px}
+.opt{font:inherit;text-align:left;background:var(--bg);color:var(--ink);border:1.5px solid var(--line);border-radius:10px;padding:12px 14px;cursor:pointer;min-height:48px}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt.right{background:var(--ok-soft);border-color:var(--ok)}.opt.wrong{background:var(--bad-soft);border-color:var(--bad)}
+.typebox input{width:100%;font:inherit;font-size:1.1rem;padding:12px;border:1.5px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink)}
+.keys{display:flex;gap:6px;margin:8px 0}.key{font:inherit;font-size:1.1rem;width:44px;height:44px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+.placed{min-height:56px;display:flex;flex-wrap:wrap;gap:6px;padding:8px;border:1.5px dashed var(--line);border-radius:10px;margin-bottom:10px;align-items:center}
+.bank{display:flex;flex-wrap:wrap;gap:6px}
+.tok{font:inherit;font-weight:500;background:var(--bg);color:var(--ink);border:1.5px solid var(--line);border-radius:8px;padding:8px 12px;cursor:pointer;min-height:42px}
+.placed .tok{background:var(--accent-soft);border-color:var(--accent)}
+.hint{color:var(--muted);font-size:.9rem}
+.fb{margin-top:14px;padding:12px 14px;border-radius:10px}
+.fb.ok{background:var(--ok-soft)}.fb.bad{background:var(--bad-soft)}
+.verdict{font-family:var(--display);font-weight:700;font-size:1.1rem;margin:0 0 4px}
+.fb.ok .verdict{color:var(--ok)}.fb.bad .verdict{color:var(--bad)}
+.ca,.why,.note{margin:.3em 0}.note{color:var(--muted);font-size:.92rem}
+.miss .qq{font-size:1rem}
+.spk{font:inherit;border:0;background:var(--accent-soft);color:var(--accent);border-radius:99px;width:30px;height:30px;line-height:1;cursor:pointer;margin-right:6px;flex:none;vertical-align:middle}
+.spk:hover{background:var(--accent);color:var(--accent-ink)}
+body.nospeech .spk{display:none}
+.say{cursor:pointer;border-bottom:1px dotted var(--accent)}
+.pr-inline{color:var(--muted);font-style:italic;font-size:.9em}
+.t.conj td small.pr{display:block;font-size:.78rem;font-style:italic}
+.pronline{display:flex;gap:8px;align-items:flex-start;margin:.6em 0;padding:8px 10px;background:var(--surface);border-radius:8px;border:1px solid var(--line)}
+.fb.almost{background:var(--warn-soft)}.fb.almost .verdict{color:var(--warn)}
+.qcard.almost{border-color:var(--warn)}
+.progrow{display:flex;flex-wrap:wrap;gap:16px;color:var(--muted);font-size:.95rem;margin:4px 0}
+.sec small{font-family:var(--body);font-size:.8rem;color:var(--muted);font-weight:500;margin-left:6px}
+.small{font-size:.88rem}
+code{background:var(--accent-soft);padding:1px 5px;border-radius:4px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media print{.sticky,.top,.actions{display:none}body{background:#fff}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script src="data.js"></script>
+<script src="pron.js"></script>
+<script src="check.js"></script>
+<script src="lessons.js"></script>
+<script src="content123.js"></script>
+<script src="mis-preguntas.js"></script>
+<script src="custom.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
