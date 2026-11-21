@@ -4,8 +4,9 @@
 'use strict';
 
 /* ====================== LECTURA LECCIÓN 4 ====================== */
-const T4_ROOM = 'WG-Zimmer frei! In meiner Wohnung ist ab Juli ein Zimmer frei. Es hat 21 Quadratmeter, ist hell und ruhig und kostet nur 280 Euro im Monat. Im Zimmer sind schon Möbel: ein Bett, ein Schrank, ein Schreibtisch, ein Tisch und zwei Stühle. Küche, Balkon und Bad teilen wir. Im Bad gibt es eine Dusche, aber keine Badewanne. Bitte nicht rauchen!';
-const T4_ROOM_ES = '¡Cuarto libre en departamento compartido! En mi departamento queda un cuarto libre a partir de julio. Tiene 21 metros cuadrados, es luminoso y tranquilo y cuesta solo 280 euros al mes. El cuarto ya tiene muebles: una cama, un armario, un escritorio, una mesa y dos sillas. La cocina, el balcón y el baño los compartimos. En el baño hay regadera, pero no tina. ¡Por favor, no fumar!';
+/* Ficha propia con los datos del anuncio «Zimmer frei!» (p. 56), en formato de anuncio abreviado */
+const T4_ROOM = 'Zimmer frei ab Juli · 21 m² · hell und ruhig · nur 280 Euro/Monat · Möbel schon da: Bett, Schrank, Schreibtisch, Tisch, 2 Stühle · Küche, Balkon und Bad für beide · im Bad: Toilette und Dusche, keine Badewanne · kein Raucher';
+const T4_ROOM_ES = 'Cuarto libre desde julio · 21 m² · luminoso y tranquilo · solo 280 euros al mes · ya tiene muebles: cama, armario, escritorio, mesa, 2 sillas · cocina, balcón y baño para los dos · en el baño: inodoro y regadera, sin tina · no fumadores';
 const ADS4 = [
   ['Zi.', 'Zimmer', 'cuarto'], ['Whg.', 'Wohnung', 'departamento'], ['qm / m²', 'Quadratmeter', 'metros cuadrados'], ['ca.', 'circa', 'aproximadamente'],
   ['Balk.', 'Balkon', 'balcón'], ['Gart.', 'Garten', 'jardín'], ['EBK', 'Einbauküche', 'cocina integral'], ['NK', 'Nebenkosten', 'gastos adicionales'],
@@ -21,13 +22,13 @@ function genR4() {
   const M = maker('r4');
   const out = [];
   const Q = (q, a, w, why) => out.push(M.mc(q, a, w, why, 'Lectura'));
-  Q('Anuncio «WG-Zimmer frei»: ¿desde cuándo está libre el cuarto?', 'a partir de julio', ['de inmediato', 'desde enero', 'solo en julio'], '«ab Juli» = a partir de julio. ab = a partir de.');
-  Q('Anuncio «WG-Zimmer frei»: ¿cuánto mide el cuarto?', '21 metros cuadrados', ['280 metros cuadrados', '12 metros cuadrados', '2 metros cuadrados'], '«Es hat 21 Quadratmeter». 280 es el precio, no el tamaño.');
-  Q('Anuncio «WG-Zimmer frei»: ¿cómo es el cuarto?', 'luminoso, tranquilo y barato', ['oscuro y caro', 'grande y ruidoso', 'sin muebles'], 'hell = luminoso, ruhig = tranquilo, nur 280 Euro = barato.');
-  Q('Anuncio «WG-Zimmer frei»: ¿cuántas sillas hay?', 'dos', ['tres', 'una', 'ninguna'], '«zwei Stühle».');
-  Q('Anuncio «WG-Zimmer frei»: ¿qué hay en el baño?', 'regadera, pero no tina', ['tina y regadera', 'solo tina', 'nada'], '«eine Dusche, aber keine Badewanne».');
-  Q('Anuncio «WG-Zimmer frei»: ¿qué se comparte?', 'la cocina, el balcón y el baño', ['el cuarto y la cama', 'solo la cocina', 'el jardín'], '«Küche, Balkon und Bad teilen wir.» teilen = compartir.');
-  Q('¿Qué es una «WG» (Wohngemeinschaft)?', 'un departamento compartido entre varias personas', ['un hotel', 'una casa de campo', 'una oficina'], 'WG = Wohngemeinschaft: personas que viven juntas y comparten cocina y baño. Lara vive en una WG en la historia del libro.');
+  Q('Anuncio «Zimmer frei»: ¿desde cuándo está libre el cuarto?', 'a partir de julio', ['de inmediato', 'desde enero', 'solo en julio'], '«ab Juli» = a partir de julio. ab = a partir de.');
+  Q('Anuncio «Zimmer frei»: ¿cuánto mide el cuarto?', '21 metros cuadrados', ['280 metros cuadrados', '12 metros cuadrados', '2 metros cuadrados'], '21 m² (Quadratmeter). 280 es el precio, no el tamaño.');
+  Q('Anuncio «Zimmer frei»: ¿cómo es el cuarto?', 'luminoso, tranquilo y barato', ['oscuro y caro', 'grande y ruidoso', 'sin muebles'], 'hell = luminoso, ruhig = tranquilo, nur 280 Euro = barato.');
+  Q('Anuncio «Zimmer frei»: ¿cuántas sillas hay?', 'dos', ['tres', 'una', 'ninguna'], '«zwei Stühle».');
+  Q('Anuncio «Zimmer frei»: ¿qué hay en el baño?', 'regadera, pero no tina', ['tina y regadera', 'solo tina', 'nada'], 'Toilette und Dusche, keine Badewanne.');
+  Q('Anuncio «Zimmer frei»: ¿qué se comparte?', 'la cocina, el balcón y el baño', ['el cuarto y la cama', 'solo la cocina', 'el jardín'], '«Küche, Balkon und Bad für beide» = para las dos personas.');
+  Q('¿Qué es una «WG» (Wohngemeinschaft)?', 'un departamento compartido entre varias personas', ['un hotel', 'una casa de campo', 'una oficina'], 'WG = Wohngemeinschaft: personas que viven juntas y comparten cocina y baño.');
   out.push(M.ty('Corrige: «Das Zimmer ist 280 Quadratmeter groß.» ¿Cuántos son en realidad? Escribe el número.', ['21', 'einundzwanzig'], 'Son 21 m². 280 es la renta en euros.', 'Lectura'));
   out.push(M.ty('Corrige: «Es ist hell, ruhig und teuer.» ¿Qué palabra está mal? Escribe la correcta.', ['billig'], 'El cuarto es barato (billig), no caro (teuer).', 'Lectura'));
   ADS4.forEach(a => {
@@ -53,7 +54,7 @@ function genR4() {
   return out;
 }
 LESSONS.r4 = () => box('Lectura y anuncios de la lección 4', '<p>Texto escrito para la app sobre el tema de <b>Zwischendurch mal: Zimmer frei!</b> (p. 56) y las abreviaturas de los anuncios de vivienda (pp. 52 y 53, AB 48).</p>') +
-  '<h4>Anuncio: WG-Zimmer frei</h4><div class="card reading"><p>' + spk(T4_ROOM) + T4_ROOM + '</p><p class="es" data-reveal>' + T4_ROOM_ES + '</p></div>' +
+  '<h4>Ficha del anuncio «Zimmer frei!»</h4><div class="card reading"><p>' + spk(T4_ROOM) + T4_ROOM + '</p><p class="es" data-reveal>' + T4_ROOM_ES + '</p></div>' +
   '<h4>Abreviaturas de los anuncios</h4>' + tbl(['Abreviatura', 'Palabra completa', 'Español'], ADS4.map(a => ['<b>' + a[0] + '</b>', spk(a[1]) + a[1] + '<small class="pr">' + pron(a[1]) + '</small>', a[2]])) +
   ph('Tres anuncios para practicar', MY_ADS.map(a => [a.t, a.es]));
 
@@ -68,12 +69,18 @@ const BERLIN = [
   ['Reichstagskuppel', 'täglich 8–24 Uhr, im Moment geschlossen', 'todos los días de 8 a 24, pero ahora está cerrada por limpieza'],
   ['Schifffahrt (Moltkebrücke)', 'Abfahrten 10.30 / 12.45 / 15.00 / 17.15 / 19.30 Uhr', 'salidas a las 10:30, 12:45, 15:00, 17:15 y 19:30']
 ];
-const T5_FRANZI = 'Franziska ist 23 Jahre alt. Sie kommt aus Bodenheim, einem kleinen Ort mit etwa 7000 Einwohnern. Dort hat sie ihren Beruf gelernt: Sie ist Zahnarzthelferin. Jetzt wohnt und arbeitet sie in Mainz. Ihre Wohnung hat ein Zimmer, eine Küche und ein Bad. Sie ist nicht teuer. Franziska klettert gern. Ihr Freund Nicolas ist 24 und studiert Medizin in Göttingen. Göttingen ist 250 Kilometer weit weg, deshalb sehen sie sich nicht so oft.';
-const T5_FRANZI_ES = 'Franziska tiene 23 años. Es de Bodenheim, un pueblo pequeño de unos 7000 habitantes. Allí aprendió su profesión: es asistente dental. Ahora vive y trabaja en Maguncia (Mainz). Su departamento tiene un cuarto, una cocina y un baño. No es caro. A Franziska le gusta escalar. Su novio Nicolas tiene 24 años y estudia medicina en Gotinga. Gotinga está a 250 kilómetros, por eso no se ven muy seguido.';
+/* Ficha propia (Steckbrief) con los datos del texto de Franziska (p. 68), como pide el ejercicio del libro */
+const FRANZI = [
+  ['Alter: 23 Jahre', 'Edad: 23 años'], ['Geburtsort: Bodenheim (ca. 7000 Einwohner)', 'Lugar de nacimiento: Bodenheim (unos 7000 habitantes)'],
+  ['Beruf: Zahnarzthelferin', 'Profesión: asistente dental'], ['Wohnort und Arbeit: Mainz (über 200.000 Einwohner)', 'Vive y trabaja en: Mainz (más de 200.000 habitantes)'],
+  ['Wohnung: 1 Zimmer, Küche, Bad, nicht teuer', 'Departamento: 1 cuarto, cocina, baño, no es caro'], ['Hobby: Klettern', 'Pasatiempo: escalar'],
+  ['Freund: Nicolas, 24, studiert Medizin in Göttingen', 'Novio: Nicolas, 24 años, estudia medicina en Gotinga'], ['Mainz bis Göttingen: 250 km', 'De Mainz a Gotinga: 250 km']
+];
+/* Horario del cómic «Der kleine Mann: Die Traumfrau» (p. 68) en forma de agenda propia */
 const COMIC5 = [
-  ['Um 7.00 Uhr steht er auf und frühstückt.', 'A las 7:00 se levanta y desayuna.'], ['Um 7.45 Uhr fährt er zur Arbeit.', 'A las 7:45 va al trabajo.'],
-  ['Von 8.30 bis 17 Uhr arbeitet er.', 'De 8:30 a 17:00 trabaja.'], ['Von 18 bis 19 Uhr geht er spazieren.', 'De 18 a 19 h sale a pasear.'],
-  ['Von 20 bis 23 Uhr sieht er fern.', 'De 20 a 23 h ve televisión.'], ['Von 23.30 bis 7.00 Uhr schläft er.', 'De 23:30 a 7:00 duerme.']
+  ['7.00 Uhr: aufstehen und frühstücken', '7:00: levantarse y desayunar'], ['7.45 Uhr: zur Arbeit fahren', '7:45: ir al trabajo'],
+  ['8.30 bis 17 Uhr: arbeiten', '8:30 a 17:00: trabajar'], ['18 bis 19 Uhr: spazieren gehen', '18 a 19: salir a pasear'],
+  ['20 bis 23 Uhr: fernsehen', '20 a 23: ver televisión'], ['23.30 bis 7.00 Uhr: schlafen', '23:30 a 7:00: dormir']
 ];
 function genR5() {
   const M = maker('r5');
@@ -93,15 +100,16 @@ function genR5() {
     out.push(M.mc('Ansage (oficial): «' + t[1] + '». ¿Cómo lo dice un amigo (privat)?', t[2], sample(['halb neun', 'sieben Uhr', 'halb elf', 'Viertel vor eins', 'Viertel nach fünf', 'halb acht', 'drei Uhr', 'acht Uhr', 'halb sieben', 'Viertel nach acht'].filter(x => x !== t[2]), 3), t[0] + ': oficial «' + t[1] + '» (de 0 a 24, minutos al final) = privat «' + t[2] + '» (de 1 a 12, con halb, Viertel, nach y vor).', 'Hora'));
   });
   const F = (q, a, w, why) => out.push(M.mc('Texto de Franziska (p. 68): ' + q, a, w, why, 'Lectura'));
+  FRANZI.forEach(f => out.push(info(M.mc('Ficha de Franziska: «' + f[0] + '» significa:', f[1], sample(FRANZI.map(x => x[1]), 3, [f[1]]), f[0] + ' = ' + f[1], 'Lectura'), f[0], f[1])));
   F('¿Cuántos años tiene?', '23', ['24', '32', '7'], 'Franziska tiene 23 años. Nicolas tiene 24.');
   F('¿De dónde es?', 'de Bodenheim, un pueblo pequeño', ['de Mainz', 'de Göttingen', 'de Berlín'], 'Nació en Bodenheim (unos 7000 habitantes).');
   F('¿Cuál es su profesión?', 'asistente dental (Zahnarzthelferin)', ['médica', 'maestra', 'estudiante de medicina'], 'Zahnarzt = dentista, Helferin = ayudante.');
   F('¿Dónde vive y trabaja ahora?', 'en Mainz', ['en Bodenheim', 'en Göttingen', 'en Berlín'], 'Hoy vive y trabaja en Mainz (más de 200.000 habitantes).');
   F('¿Cómo es su departamento?', 'un cuarto, cocina y baño, no es caro', ['tres cuartos y jardín', 'es muy caro', 'no tiene cocina'], 'ein Zimmer, eine Küche und ein Bad; nicht teuer.');
-  F('¿Cuál es su pasatiempo?', 'escalar (klettern)', ['nadar', 'cocinar', 'leer'], 'Mein Hobby ist Klettern.');
-  F('¿Qué hace Nicolas?', 'estudia medicina en Göttingen', ['trabaja en Mainz', 'es dentista en Bodenheim', 'escala con Franziska'], 'Nicolas studiert Medizin in Göttingen.');
-  F('¿Por qué no se ven seguido?', 'porque viven a 250 km de distancia', ['porque no tienen tiempo los fines de semana', 'porque están peleados', 'porque Nicolas trabaja de noche'], 'Von Mainz nach Göttingen sind es 250 Kilometer.');
-  COMIC5.forEach(c => out.push(info(M.mc('Cómic «Der kleine Mann» (p. 68): «' + c[0] + '» significa:', c[1], sample(COMIC5.map(x => x[1]), 3, [c[1]]), c[0] + ' = ' + c[1], 'Cómic'), c[0], c[1])));
+  F('¿Cuál es su pasatiempo?', 'escalar (klettern)', ['nadar', 'cocinar', 'leer'], 'Hobby: Klettern.');
+  F('¿Qué hace Nicolas?', 'estudia medicina en Göttingen', ['trabaja en Mainz', 'es dentista en Bodenheim', 'escala con Franziska'], 'Nicolas estudia medicina en Göttingen.');
+  F('¿Por qué no se ven seguido?', 'porque viven a 250 km de distancia', ['porque no tienen tiempo los fines de semana', 'porque están peleados', 'porque Nicolas trabaja de noche'], 'Entre Mainz y Göttingen hay 250 km.');
+  COMIC5.forEach(c => out.push(info(M.mc('Agenda del cómic «Der kleine Mann» (p. 68): «' + c[0] + '» significa:', c[1], sample(COMIC5.map(x => x[1]), 3, [c[1]]), c[0] + ' = ' + c[1], 'Cómic'), c[0], c[1])));
   out.push(M.mc('Cómic «Der kleine Mann»: ¿qué hace primero?', 'Se levanta y desayuna a las 7:00', ['Ve televisión', 'Sale a pasear', 'Trabaja'], 'Orden del día: 7.00 aufstehen und frühstücken · 7.45 zur Arbeit · 8.30–17 arbeiten · 18–19 spazieren gehen · 20–23 fernsehen · 23.30 schlafen.', 'Cómic'));
   out.push(M.bd('A las siete se levanta.', ['Um', 'sieben', 'Uhr', 'steht', 'er', 'auf'], 'Inversión + separable: Um sieben Uhr (1) steht (2) er ... auf (final).', [['Er', 'steht', 'um', 'sieben', 'Uhr', 'auf']]));
   out.push(M.bd('Franziska vive en Mainz.', ['Franziska', 'wohnt', 'in', 'Mainz'], 'Verbo en posición 2.'));
@@ -110,16 +118,19 @@ function genR5() {
   out.push(M.ty('Escribe la abreviatura alemana de «Samstag»', ['Sa', 'Sa.'], 'Mo, Di, Mi, Do, Fr, Sa, So.', 'Horarios'));
   return out;
 }
-LESSONS.r5 = () => box('Lecturas de la lección 5', '<p>Resúmenes en alemán sencillo y redacción propia de los textos de <b>Ein Tag in Berlin</b> (pp. 64 y 65), <b>Zwischendurch mal</b> (pp. 68 y 69: cómic y texto de Franziska).</p>') +
+LESSONS.r5 = () => box('Lecturas de la lección 5', '<p>Fichas de datos y redacción propia sobre los textos de <b>Ein Tag in Berlin</b> (pp. 64 y 65), <b>Zwischendurch mal</b> (pp. 68 y 69: cómic y texto de Franziska).</p>') +
   '<h4>Horarios en Berlín (Öffnungszeiten)</h4>' + tbl(['Lugar', 'Horario', 'Español'], BERLIN.map(b => ['<b>' + b[0] + '</b>', spk(b[1]) + b[1], b[2]])) +
   box('Días abreviados', '<p>Mo · Di · Mi · Do · Fr · Sa · So. <b>täglich</b> = todos los días. <b>geöffnet</b> = abierto. <b>geschlossen</b> = cerrado. <b>Feiertag</b> = día festivo.</p>') +
-  '<h4>Franziska (resumen)</h4><div class="card reading"><p>' + spk(T5_FRANZI) + T5_FRANZI + '</p><p class="es" data-reveal>' + T5_FRANZI_ES + '</p></div>' +
-  ph('Cómic «Der kleine Mann»: su día', COMIC5);
+  ph('Ficha de Franziska (Steckbrief)', FRANZI) +
+  ph('Agenda del cómic «Der kleine Mann»', COMIC5);
 
 /* ====================== LECTURA LECCIÓN 6 ====================== */
-const T6_DACH = 'Reiseland D-A-CH: Deutschland, Österreich und die Schweiz. Im Norden gibt es die Nordsee und die Ostsee. Dort kann man schwimmen, segeln und windsurfen. Der Sommer ist im Norden nicht so heiß und es regnet manchmal. In der Mitte und im Süden von Deutschland gibt es Mittelgebirge und große Wälder. Vom Frühling bis zum Herbst ist das ideal zum Wandern und Fahrradfahren. Im Winter kann man dort Ski fahren. Ganz im Süden, in Österreich und in der Schweiz, sind die Alpen. Dort kann man Mountainbike fahren, klettern oder Paragliding machen. D-A-CH ist zu jeder Jahreszeit schön.';
-const T6_DACH_ES = 'Destino D-A-CH: Alemania, Austria y Suiza. En el norte están el mar del Norte y el mar Báltico. Allí se puede nadar, navegar a vela y hacer windsurf. En el norte el verano no es tan caluroso y a veces llueve. En el centro y en el sur de Alemania hay montañas medias y grandes bosques. De la primavera al otoño es ideal para caminar y andar en bicicleta. En invierno allí se puede esquiar. Muy al sur, en Austria y en Suiza, están los Alpes. Allí se puede andar en bicicleta de montaña, escalar o hacer parapente. D-A-CH es bonito en cualquier estación.';
-const T6_ALMA = 'Alma Schneider hat ein besonderes Hobby: Sie fotografiert Wolken. Sie geht gern spazieren, sieht in den Himmel und macht Fotos. Wolken und Farben gefallen ihr sehr.';
+/* Tabla propia con la información del folleto «Reiseland D-A-CH» (pp. 76 y 77), organizada por regiones */
+const DACH = [
+  ['Norddeutschland', 'Nordsee und Ostsee', 'schwimmen, segeln, windsurfen, Fahrrad fahren, wandern', 'Sommer nicht so heiß, manchmal Regen', 'Alemania del norte: mar del Norte y Báltico; nadar, vela, windsurf, bici, caminar; verano no tan caluroso, a veces llueve'],
+  ['Mitte und Süden von Deutschland', 'Mittelgebirge und große Wälder', 'wandern und Rad fahren (Frühling bis Herbst), Ski fahren (Winter)', 'ideal von Frühling bis Herbst', 'Centro y sur de Alemania: montañas medias y bosques; caminar y bici de primavera a otoño, esquí en invierno'],
+  ['Schweiz, Österreich, Süddeutschland', 'die Alpen', 'Mountainbike, Bergsteigen, Klettern, Paragliding, Canyoning', 'zu jeder Jahreszeit', 'Suiza, Austria y el extremo sur de Alemania: los Alpes; bici de montaña, montañismo, escalada, parapente, barranquismo']
+];
 const VEREIN = [['Fußballverein', 'club de fútbol'], ['Musikverein', 'club de música / banda'], ['Sportverein', 'club deportivo'], ['Schachklub', 'club de ajedrez'], ['Gesangverein', 'coro (club de canto)']];
 function genR6() {
   const M = maker('r6');
@@ -138,18 +149,16 @@ function genR6() {
   VEREIN.forEach(v => out.push(M.mc('Zwischendurch (p. 80): ¿qué es un «' + v[0] + '»?', v[1], sample(VEREIN.map(x => x[1]), 3, [v[1]]), v[0] + ' = ' + v[1] + '. der Verein / der Klub = club o asociación. En Alemania hay clubes para casi todo.', 'Vereine')));
   out.push(M.mc('La canción de la p. 80 practica sobre todo:', 'la negación con kein / keinen / keine', ['el Perfekt', 'los números', 'la hora'], 'La canción repite frases negativas con kein / keinen / keine. Escúchala con el audio del libro; aquí no se reproduce la letra.', 'Vereine'));
   [['Ich esse keinen Fisch.', 'No como pescado.', 'Fisch es masculino → keinen (acusativo).'], ['Er trinkt kein Bier.', 'Él no toma cerveza.', 'Bier es neutro → kein.'], ['Wir haben keine Butter.', 'No tenemos mantequilla.', 'Butter es femenino → keine.'], ['Sie spielt keinen Tennis.', 'Ella no juega tenis.', 'Ojo: Tennis es neutro (das Tennis), pero con deportes se dice «Sie spielt nicht Tennis» o «kein Tennis».']].slice(0, 3).forEach(x => out.push(info(M.ty('Traduce con «kein»: «' + x[1] + '»', [x[0].replace(/[.?]$/, '')], x[2], 'kein / keine'), x[0], x[1])));
-  const A = (q, a, w, why) => out.push(M.mc('Película «Almas Hobby: Wolkenfotos» (p. 80): ' + q, a, w, why, 'Película'));
-  A('¿Cuál es el hobby de Alma?', 'fotografiar nubes', ['pintar flores', 'escalar montañas', 'cocinar'], 'Wolkenfotos = fotos de nubes (die Wolke, die Wolken).');
-  A('«Wolken und Farben gefallen ihr.» significa:', 'Le gustan las nubes y los colores.', ['Ella pinta nubes de colores.', 'Las nubes son grises.', 'Ella vende fotos.'], 'gefallen + dativo: ihr = a ella. Plural (Wolken und Farben) → gefallen.');
+  /* TODO: la película «Almas Hobby: Wolkenfotos» (p. 80) no está en el PDF; solo se usa el título. */
+  out.push(M.mc('Película «Almas Hobby: Wolkenfotos» (p. 80): según el título, ¿cuál es el hobby de Alma?', 'fotografiar nubes', ['pintar flores', 'escalar montañas', 'cocinar'], 'Wolkenfotos = fotos de nubes (die Wolke, die Wolken + das Foto).', 'Película'));
   out.push(M.bd('En el norte se puede hacer windsurf.', ['Im', 'Norden', 'kann', 'man', 'windsurfen'], 'man = uno / se. Modal en posición 2, infinitivo al final.'));
   out.push(M.bd('En invierno esquío.', ['Im', 'Winter', 'fahre', 'ich', 'Ski'], 'Inversión: Im Winter (1) fahre (2) ich.', [['Ich', 'fahre', 'im', 'Winter', 'Ski']]));
   out.push(M.bd('Hay muchas ofertas.', ['Es', 'gibt', 'viele', 'Angebote'], 'es gibt = hay.'));
   return out;
 }
-LESSONS.r6 = () => box('Lecturas de la lección 6', '<p>Resumen propio del folleto <b>Reiseland D-A-CH</b> (pp. 76 y 77) y de <b>Zwischendurch mal</b> (p. 80: clubes y la película de Alma). La letra de la canción no se reproduce: escúchala en el audio del libro.</p>') +
-  '<h4>Reiseland D-A-CH (resumen)</h4><div class="card reading"><p>' + spk(T6_DACH) + T6_DACH + '</p><p class="es" data-reveal>' + T6_DACH_ES + '</p></div>' +
-  ph('Clubes (Vereine)', VEREIN.map(v => [v[0], v[1]])) +
-  '<h4>Almas Hobby</h4><div class="card reading"><p>' + spk(T6_ALMA) + T6_ALMA + '</p><p class="es" data-reveal>Alma Schneider tiene un pasatiempo especial: fotografía nubes. Le gusta salir a pasear, mira al cielo y toma fotos. Le gustan mucho las nubes y los colores.</p></div>';
+LESSONS.r6 = () => box('Lecturas de la lección 6', '<p>Tabla propia con la información del folleto <b>Reiseland D-A-CH</b> (pp. 76 y 77) y <b>Zwischendurch mal</b> (p. 80: clubes). La letra de la canción no se reproduce: escúchala en el audio del libro.</p>') +
+  '<h4>Reiseland D-A-CH por regiones</h4>' + tbl(['Región', 'Qué hay', 'Actividades', 'Clima'], DACH.map(d => ['<b>' + d[0] + '</b>', spk(d[1]) + d[1], spk(d[2]) + d[2], d[3]])) + ph('Traducción', DACH.map(d => [d[0] + ': ' + d[1], d[4]])) +
+  ph('Clubes (Vereine)', VEREIN.map(v => [v[0], v[1]]));
 
 /* ====================== GRAMÁTICA INTENSIVA (temas de la maestra) ====================== */
 /* Sustantivos de las lecciones 1 a 7 con género, para generar práctica de artículos y negación */
