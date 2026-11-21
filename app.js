@@ -1,6 +1,9 @@
 /* Motor de la app v2: niveles, sesiones, repetición, corrección inteligente, pronunciación y progreso */
 'use strict';
 
+/* Versión visible al pie de la portada: súbela en cada publicación (ver CHANGELOG.md) */
+const APP_VERSION = '3.3';
+const APP_DATE = '20/11/2026';
 const KEY = 'aleman-a1-v2';
 const OLD_KEY = 'aleman-a1-lecciones-4-6-v1';
 let store = { q: {}, set: { strict: false } };
@@ -193,6 +196,7 @@ function viewHome() {
     '<input type="file" id="imp" accept="application/json,.json" hidden>' +
     '<p class="muted small">El progreso vive en este navegador. Si cambias de dispositivo o de dirección web, expórtalo aquí e impórtalo allá.</p></div>';
   h += '<p class="foot">Para el examen: empieza con «Temas de la maestra» (artículos, negación, der o den, ja/nein/doch, la hora, verbos y orden de palabras) y termina con el repaso de las lecciones 4 a 6 y el de la lección 7.</p>';
+  h += '<p class="version">Versión ' + APP_VERSION + ' · actualizada el ' + APP_DATE + ' · ' + allPool().length + ' preguntas</p>';
   return h;
 }
 

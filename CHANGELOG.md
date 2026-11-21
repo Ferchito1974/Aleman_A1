@@ -1,5 +1,8 @@
 # Cambios
 
+## v3.3 (20/11/2026)
+- La versión y la fecha de actualización se muestran al pie de la portada.
+
 ## v3.2
 - Modo alemán (activado por defecto, se desactiva en Ajustes): consignas, botones y resultados en alemán; botón «🌐 Übersetzen» con la traducción y las palabras clave; la explicación en español queda plegada y se abre sola si fallas.
 - Nuevo grupo «Auf Deutsch: Verben anwenden»: unas 860 preguntas en alemán con los verbos de las lecciones 1 a 7 en frases (todas las personas), pasar a Perfekt, añadir können o wollen, empezar con «Heute», hacer preguntas, cambiar la persona, tablas de conjugación completas y situaciones («Was sagst du?»).
