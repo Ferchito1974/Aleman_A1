@@ -13,6 +13,36 @@ if (!store.q) store.q = {};
 if (!store.set) store.set = { strict: false };
 function save() { try { localStorage.setItem(KEY, JSON.stringify(store)); } catch (e) { /* ignorar */ } }
 
+/* ---------- v3: racha de estudio y tema claro/oscuro ---------- */
+const THEME_KEY = 'aleman-a1-theme';
+const dayStr = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+function touchStreak() { // se llama al contestar; la racha vive dentro del mismo progreso (misma clave)
+  const t = dayStr(new Date());
+  const y = new Date(); y.setDate(y.getDate() - 1);
+  const s = store.streak || { last: '', days: 0, best: 0 };
+  if (s.last === t) return;
+  s.days = s.last === dayStr(y) ? s.days + 1 : 1;
+  s.best = Math.max(s.best || 0, s.days); s.last = t;
+  store.streak = s;
+}
+function streakDays() {
+  const s = store.streak; if (!s || !s.last) return 0;
+  const y = new Date(); y.setDate(y.getDate() - 1);
+  return (s.last === dayStr(new Date()) || s.last === dayStr(y)) ? s.days : 0;
+}
+function themeGet() { try { return localStorage.getItem(THEME_KEY) || 'auto'; } catch (e) { return 'auto'; } }
+function themeApply(t) {
+  if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); else document.documentElement.removeAttribute('data-theme');
+}
+function themeCycle() {
+  const order = ['auto', 'light', 'dark']; const t = order[(order.indexOf(themeGet()) + 1) % 3];
+  try { localStorage.setItem(THEME_KEY, t); } catch (e) { /* ignorar */ }
+  themeApply(t); render();
+}
+const THEME_LABEL = { auto: ['🌓', 'Automático'], light: ['☀️', 'Claro'], dark: ['🌙', 'Oscuro'] };
+const themeBtn = () => { const t = themeGet(); const l = THEME_LABEL[t] || THEME_LABEL.auto; return '<button class="theme-btn" data-act="theme" aria-label="Tema: ' + l[1] + '. Toca para cambiar" title="Tema: ' + l[1] + '"><span class="ti" aria-hidden="true">' + l[0] + '</span><span>' + l[1] + '</span></button>'; };
+themeApply(themeGet());
+
 const POOLS = {};
 function pool(id) { if (!POOLS[id]) POOLS[id] = LEVELS.find(l => l.id === id).gen(); return POOLS[id]; }
 const levelsBy = ex => LEVELS.filter(l => ex === 'all' || String(l.exam) === String(ex));
@@ -77,7 +107,9 @@ function infoOf(q) {
 }
 function submit(ok, note, shown, almost) {
   const Q = S.quiz; const cur = Q.queue[0]; const q = cur.q;
+  Q.anim = ok ? 'ok' : 'bad'; // v3: animación de la tarjeta
   if (cur.retry === 0) {
+    touchStreak(); // v3: racha de estudio
     const s = store.q[q.id] || { c: 0, n: 0, w: false };
     s.n++;
     if (ok) { s.c++; s.w = false; Q.firstOk++; } else { s.c = 0; s.w = true; Q.missed.push(q); Q.tagMiss[q.tag || q.level] = (Q.tagMiss[q.tag || q.level] || 0) + 1; }
@@ -108,25 +140,45 @@ function doCheck() {
 const bar = (pct, cls) => '<div class="bar ' + (cls || '') + '"><i style="width:' + pct + '%"></i></div>';
 const speaker = t => '<button class="spk" data-say="' + esc(t) + '" title="Escuchar" aria-label="Escuchar">🔊</button>';
 
+/* v3: anillo de progreso (SVG) y estado de cada nivel */
+function ring(pct) {
+  const r = 52, c = 2 * Math.PI * r, off = c * (1 - pct / 100);
+  return '<div class="ring" role="img" aria-label="Progreso total: ' + pct + ' por ciento"><svg viewBox="0 0 120 120" aria-hidden="true"><circle class="track" cx="60" cy="60" r="' + r + '" fill="none" stroke-width="11"/>' +
+    '<circle class="meter" cx="60" cy="60" r="' + r + '" fill="none" stroke-width="11" stroke-dasharray="' + c.toFixed(1) + '" stroke-dashoffset="' + c.toFixed(1) + '" data-off="' + off.toFixed(1) + '"/></svg>' +
+    '<div class="ring-txt"><div><b>' + pct + '%</b><small>contestado bien</small></div></div></div>';
+}
+function levelStatus(pp) {
+  if (pp.total && pp.mastered / pp.total >= 0.9) return '<span class="status done">✓ Dominado</span>';
+  if (pp.known > 0 || pp.mastered > 0) return '<span class="status go">● En curso</span>';
+  return '<span class="status new">○ Sin empezar</span>';
+}
 function viewHome() {
   const all = allPool(); const p = prog(all); const missed = all.filter(isMissed);
-  const p1 = prog(poolOf(1)), p2 = prog(poolOf(2));
-  let h = '<header class="hero"><p class="eyebrow">Schritte international Neu 1 · A1.1</p><h1>Alemán A1: lecciones 1 a 6</h1>' +
-    '<p class="lead">Aprende por niveles, practica con preguntas que se repiten hasta que las domines y lee siempre el porqué, la pronunciación y la traducción.</p>' +
-    '<div class="overall"><div><b>' + p.pct + '%</b><span>de ' + p.total + ' preguntas contestadas bien</span></div>' + bar(p.pct) + '<small>' + p.mastered + ' dominadas (2 aciertos seguidos)</small></div></header>';
-  h += '<section class="actions"><button class="btn primary" data-act="mix" data-ex="2" data-n="25">Repaso lecciones 4 a 6 (25)</button>' +
-    '<button class="btn" data-act="mix" data-ex="1" data-n="25">Repaso lecciones 1 a 3 (25)</button>' +
-    '<button class="btn" data-act="mix" data-ex="all" data-n="60">Simulacro final: todo (60)</button>' +
-    '<button class="btn" data-act="errors"' + (missed.length ? '' : ' disabled') + '>Mis errores (' + missed.length + ')</button>' +
-    '<button class="btn ghost" data-act="chuleta">Chuleta de todo</button><button class="btn ghost" data-act="pron">Guía de pronunciación</button></section>';
-  h += '<div class="progrow"><span>Lecciones 1 a 3: <b>' + p1.pct + '%</b></span><span>Lecciones 4 a 6: <b>' + p2.pct + '%</b></span></div>';
+  const p1 = prog(poolOf(1)), p2 = prog(poolOf(2)), p3 = prog(poolOf(3));
+  const sd = streakDays();
+  let h = '<div class="appbar"><span class="brand"><span class="brand-mark" aria-hidden="true">A1</span>Alemán A1</span><span class="spacer"></span>' + themeBtn() + '</div>';
+  h += '<header class="hero-card">' + ring(p.pct) + '<div class="hero-body"><p class="eyebrow">Schritte international Neu 1 · A1.1</p><h1>Lecciones 1 a 7</h1>' +
+    '<p class="lead">Aprende por niveles, practica con preguntas que se repiten hasta dominarlas y lee siempre el porqué, la pronunciación y la traducción.</p>' +
+    '<div class="stats"><span class="stat streak" title="Días seguidos con práctica">🔥 <b>' + sd + '</b> ' + (sd === 1 ? 'día seguido' : 'días seguidos') + '</span>' +
+    '<span class="stat">✅ <b>' + p.mastered + '</b> dominadas</span><span class="stat">📚 <b>' + p.total + '</b> preguntas</span><span class="stat">🗂️ <b>' + LEVELS.length + '</b> niveles</span></div>' +
+    '</div></header>';
+  const qa = (act, ex, n, icon, title, sub, cls, dis) => '<button class="qa' + (cls ? ' ' + cls : '') + '" data-act="' + act + '"' + (ex ? ' data-ex="' + ex + '"' : '') + (n ? ' data-n="' + n + '"' : '') + (dis ? ' disabled' : '') + '><span class="qi" aria-hidden="true">' + icon + '</span><span><b>' + title + '</b><small>' + sub + '</small></span></button>';
+  h += '<section class="quick" aria-label="Repasos y herramientas">' +
+    qa('mix', '3', 25, '🆕', 'Repaso lección 7', '25 preguntas · ' + p3.pct + '%', 'primary') +
+    qa('mix', '2', 25, '🏠', 'Repaso lecciones 4 a 6', '25 preguntas · ' + p2.pct + '%') +
+    qa('mix', '1', 25, '👋', 'Repaso lecciones 1 a 3', '25 preguntas · ' + p1.pct + '%') +
+    qa('mix', 'all', 60, '🏁', 'Simulacro final', '60 preguntas de todo') +
+    qa('errors', '', 0, '🔁', 'Mis errores', missed.length + ' por repasar', '', !missed.length) +
+    qa('chuleta', '', 0, '📄', 'Chuleta de todo', 'Todo en una página') +
+    qa('pron', '', 0, '🗣️', 'Guía de pronunciación', 'Cómo leer el alemán') + '</section>';
   const groups = []; LEVELS.forEach(l => { if (!groups.includes(l.group)) groups.push(l.group); });
   groups.forEach(g => {
     const ls = LEVELS.filter(l => l.group === g); const gp = prog(ls.flatMap(l => pool(l.id)));
-    h += '<h2 class="sec">' + esc(g) + ' <small>' + gp.pct + '%</small></h2><div class="levels">';
+    h += '<h2 class="sec">' + esc(g) + ' <small>' + gp.pct + '%</small><span class="secbar">' + bar(gp.pct, gp.pct === 100 ? 'done' : '') + '</span></h2><div class="levels">';
     ls.forEach(l => {
       const pp = prog(pool(l.id));
-      h += '<button class="lv" data-act="level" data-id="' + l.id + '"><span class="num">' + l.n + '</span><span class="lt"><b>' + esc(l.title) + '</b><small>' + esc(l.sub) + '</small>' + bar(pp.pct, pp.pct === 100 ? 'done' : '') + '<small>' + pp.known + ' de ' + pp.total + ' bien · ' + pp.mastered + ' dominadas</small></span></button>';
+      h += '<button class="lv" data-act="level" data-id="' + l.id + '"><span class="icon" aria-hidden="true">' + (l.icon || '📘') + '<span class="n">' + l.n + '</span></span><span class="lt"><b>' + esc(l.title) + '</b><small>' + esc(l.sub) + '</small>' + bar(pp.pct, pp.pct === 100 ? 'done' : '') +
+        '<span class="meta"><span>' + pp.known + ' de ' + pp.total + ' bien · ' + pp.mastered + ' dominadas</span>' + levelStatus(pp) + '</span></span></button>';
     });
     h += '</div>';
   });
@@ -135,14 +187,14 @@ function viewHome() {
     '<div class="row"><button class="btn small" data-act="export">Exportar progreso</button><button class="btn small" data-act="import">Importar progreso</button><button class="btn small ghost" data-act="reset">Borrar progreso</button></div>' +
     '<input type="file" id="imp" accept="application/json,.json" hidden>' +
     '<p class="muted small">El progreso vive en este navegador. Si cambias de dispositivo o de dirección web, expórtalo aquí e impórtalo allá.</p></div>';
-  h += '<p class="foot">Para el examen de las lecciones 4 a 6: empieza con los niveles de gramática y verbos (artículos, negación, verbos, la hora, Akkusativ, ja/nein/doch) y termina con el repaso de las lecciones 4 a 6.</p>';
+  h += '<p class="foot">Para el examen: empieza con «Temas de la maestra» (artículos, negación, der o den, ja/nein/doch, la hora, verbos y orden de palabras) y termina con el repaso de las lecciones 4 a 6 y el de la lección 7.</p>';
   return h;
 }
 
 function viewLevel() {
   const l = LEVELS.find(x => x.id === S.level); const list = pool(l.id); const p = prog(list);
   let h = '<div class="top"><button class="btn ghost" data-act="home">← Niveles</button></div>';
-  h += '<h1 class="lh"><span class="num big">' + l.n + '</span>' + esc(l.title) + '</h1><p class="sub">' + esc(l.group) + ' · ' + esc(l.sub) + '</p>';
+  h += '<h1 class="lh"><span class="num big" aria-hidden="true">' + (l.icon || l.n) + '</span>' + esc(l.title) + '</h1><p class="sub">' + esc(l.group) + ' · ' + esc(l.sub) + '</p>';
   h += '<div class="tabs"><button class="tab' + (S.tab === 'learn' ? ' on' : '') + '" data-act="tab" data-t="learn">Aprender</button><button class="tab' + (S.tab === 'practice' ? ' on' : '') + '" data-act="tab" data-t="practice">Practicar (' + p.total + ')</button></div>';
   if (S.tab === 'learn') {
     h += '<div class="learn' + (S.hideEs ? ' hide-es' : '') + '"><label class="chk"><input type="checkbox" id="hide-es"' + (S.hideEs ? ' checked' : '') + ' data-act="hides"> Ocultar el español (toca una celda para verla)</label>' + LESSONS[l.id]() +
@@ -163,8 +215,8 @@ function pronLine(q) {
 function viewQuiz() {
   const Q = S.quiz; const cur = Q.queue[0]; const q = cur.q;
   const pct = Math.round(100 * Q.firstDone / Q.total);
-  let h = '<div class="qtop"><button class="btn ghost small" data-act="quit">Salir</button><span class="qt">' + esc(Q.title) + '</span><span class="qc">' + Math.min(Q.firstDone + 1, Q.total) + ' / ' + Q.total + (cur.retry ? ' · repaso' : '') + '</span></div>' + bar(pct);
-  const cls = Q.fb ? (Q.fb.ok ? (Q.fb.almost ? ' almost' : ' ok') : ' bad') : '';
+  let h = '<div class="qtop"><button class="btn ghost small" data-act="quit">← Salir</button><span class="qt">' + esc(Q.title) + '</span><span class="qc" aria-label="Pregunta ' + Math.min(Q.firstDone + 1, Q.total) + ' de ' + Q.total + '">' + Math.min(Q.firstDone + 1, Q.total) + ' / ' + Q.total + (cur.retry ? ' · repaso' : '') + '</span></div>' + bar(pct, 'session');
+  const cls = (Q.fb ? (Q.fb.ok ? (Q.fb.almost ? ' almost' : ' ok') : ' bad') : '') + (Q.fb && Q.anim ? ' anim-' + Q.anim : '');
   h += '<div class="qcard' + cls + '">' + (q.tag ? '<span class="chip">' + esc(q.tag) + '</span>' : '') + (cur.retry ? '<span class="chip warn">Repaso</span>' : '');
   if (q.kind === 'build') h += '<p class="qq">Ordena las palabras para decir: <b>' + esc(q.es) + '</b></p>';
   else h += '<p class="qq">' + q.q + '</p>';
@@ -184,7 +236,8 @@ function viewQuiz() {
   }
   if (Q.fb) {
     const verdict = Q.fb.ok ? (Q.fb.almost ? 'Casi, pero se acepta' : 'Correcto') : (Q.fb.almost ? 'Casi, pero en modo estricto cuenta como error' : 'Todavía no');
-    h += '<div class="fb ' + (Q.fb.ok ? (Q.fb.almost ? 'almost' : 'ok') : 'bad') + '"><p class="verdict">' + verdict + '</p>' +
+    const vicon = Q.fb.ok ? (Q.fb.almost ? '≈' : '✓') : '✗';
+    h += '<div class="fb ' + (Q.fb.ok ? (Q.fb.almost ? 'almost' : 'ok') : 'bad') + '" role="status" aria-live="polite"><p class="verdict"><span class="vi" aria-hidden="true">' + vicon + '</span>' + verdict + '</p>' +
       (Q.fb.ok && q.kind === 'mc' ? '' : '<p class="ca">Respuesta: <b>' + esc(Q.fb.shown) + '</b></p>') +
       (Q.fb.note ? '<p class="note">' + esc(Q.fb.note) + '</p>' : '') + pronLine(q) +
       '<p class="why"><b>Por qué:</b> ' + q.why + '</p>' + (Q.fb.willRepeat ? '<p class="note">Esta pregunta volverá a aparecer en unos minutos.</p>' : '') +
@@ -207,7 +260,7 @@ function viewSummary() {
 }
 
 function viewChuleta() {
-  let h = '<div class="top"><button class="btn ghost" data-act="home">← Niveles</button></div><h1>Chuleta completa</h1><p class="lead">Todo lo de las lecciones 1 a 6 en una sola página, con pronunciación y traducción.</p><div class="learn">';
+  let h = '<div class="top"><button class="btn ghost" data-act="home">← Niveles</button></div><h1>Chuleta completa</h1><p class="lead">Todo lo de las lecciones 1 a 7 en una sola página, con pronunciación y traducción.</p><div class="learn">';
   LEVELS.forEach(l => { h += '<h2 class="sec" id="c-' + l.id + '">' + l.n + '. ' + esc(l.title) + ' <small>' + esc(l.group) + '</small></h2>' + LESSONS[l.id](); });
   return h + '</div>';
 }
@@ -261,8 +314,12 @@ function render() {
   else if (S.view === 'summary') h = viewSummary();
   else if (S.view === 'chuleta') h = viewChuleta();
   else h = viewPron();
-  $app.innerHTML = h;
+  const enter = S.view !== render.last || (S.view === 'level' && S.level !== render.lastLevel); render.last = S.view; render.lastLevel = S.level;
+  $app.innerHTML = enter ? '<div class="view-enter">' + h + '</div>' : h;
   enhance();
+  /* v3: anima el anillo de progreso y limpia la animación de la tarjeta para la próxima respuesta */
+  const meter = $app.querySelector('.ring .meter'); if (meter) requestAnimationFrame(() => requestAnimationFrame(() => { meter.style.strokeDashoffset = meter.dataset.off; }));
+  if (S.quiz) S.quiz.anim = null;
   if (S.view === 'quiz' && S.quiz) {
     const inp = document.getElementById('ans');
     if (inp && !S.quiz.fb) inp.focus();
@@ -281,14 +338,15 @@ document.addEventListener('click', e => {
   const t = e.target.closest('[data-act],[data-reveal]'); if (!t) return;
   if (t.hasAttribute('data-reveal') && !t.dataset.act) { t.classList.toggle('show'); return; }
   const a = t.dataset.act; const Q = S.quiz;
-  if (a === 'home') go('home');
+  if (a === 'theme') themeCycle();
+  else if (a === 'home') go('home');
   else if (a === 'level') go('level', { level: t.dataset.id, tab: 'learn' });
   else if (a === 'level2') go('level', { tab: 'practice' });
   else if (a === 'tab') { S.tab = t.dataset.t; render(); window.scrollTo(0, 0); }
   else if (a === 'hides') { S.hideEs = t.checked; render(); }
   else if (a === 'strict') { store.set.strict = t.checked; save(); }
   else if (a === 'start') { const l = LEVELS.find(x => x.id === S.level); S.last = { title: 'Nivel ' + l.n + ': ' + l.title, ids: [l.id], n: +t.dataset.n, back: 'level' }; startQuiz(S.last.title, pool(l.id), S.last.n, 'level'); }
-  else if (a === 'mix') { const ex = t.dataset.ex; const names = { 1: 'Repaso lecciones 1 a 3', 2: 'Repaso lecciones 4 a 6', all: 'Simulacro final' }; S.last = { title: names[ex], ids: levelsBy(ex).map(l => l.id), n: +t.dataset.n, back: 'home' }; startQuiz(S.last.title, poolOf(ex), S.last.n, 'home'); }
+  else if (a === 'mix') { const ex = t.dataset.ex; const names = { 1: 'Repaso lecciones 1 a 3', 2: 'Repaso lecciones 4 a 6', 3: 'Repaso lección 7', all: 'Simulacro final' }; S.last = { title: names[ex], ids: levelsBy(ex).map(l => l.id), n: +t.dataset.n, back: 'home' }; startQuiz(S.last.title, poolOf(ex), S.last.n, 'home'); }
   else if (a === 'errors') { const m = allPool().filter(isMissed); S.last = { title: 'Mis errores', ids: LEVELS.map(l => l.id), n: 20, back: 'home', errors: true }; startQuiz('Mis errores', m, 20, 'home'); }
   else if (a === 'again') { const L = S.last; const list = L.errors ? allPool().filter(isMissed) : L.ids.flatMap(id => pool(id)); if (!list.length) go('home'); else startQuiz(L.title, list, L.n, L.back); }
   else if (a === 'chuleta') go('chuleta');

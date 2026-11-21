@@ -54,6 +54,16 @@ const PART = [
   ['telefonieren', 'telefoniert', 'haben', 'hablar por teléfono', '-iert'], ['fotografieren', 'fotografiert', 'haben', 'fotografiar', '-iert'], ['studieren', 'studiert', 'haben', 'estudiar', '-iert'],
   ['gehen', 'gegangen', 'sein', 'ir (a pie)', 'sein'], ['fahren', 'gefahren', 'sein', 'ir (en vehículo)', 'sein'], ['kommen', 'gekommen', 'sein', 'venir / llegar', 'sein']
 ];
+/* complemento natural para las frases de práctica del Perfekt: [tiempo, complemento] */
+const PART_OBJ = {
+  üben: ['gestern', 'Hula-Hoop'], machen: ['gestern', 'Hausaufgaben'], lieben: ['früher', 'Hula-Hoop'], kaufen: ['gestern', 'Brot'], lernen: ['gestern', 'Deutsch'],
+  kochen: ['gestern', 'eine Suppe'], hören: ['gestern', 'Musik'], spielen: ['gestern', 'Fußball'], arbeiten: ['gestern', 'viel'], frühstücken: ['gestern', 'spät'],
+  malen: ['gestern', 'ein Bild'], tanzen: ['gestern', 'viel'], fragen: ['gestern', 'den Lehrer'], schicken: ['gestern', 'eine E-Mail'], wohnen: ['früher', 'in Köln'],
+  suchen: ['gestern', 'eine Wohnung'], zeichnen: ['gestern', 'ein Haus'], treffen: ['gestern', 'Freunde'], finden: ['gestern', 'ein Foto'], sprechen: ['gestern', 'mit Lara'],
+  schreiben: ['gestern', 'eine E-Mail'], trinken: ['gestern', 'Kaffee'], schlafen: ['gestern', 'lange'], essen: ['gestern', 'Pizza'], lesen: ['gestern', 'ein Buch'],
+  sehen: ['gestern', 'einen Film'], nehmen: ['gestern', 'den Bus'], singen: ['gestern', 'ein Lied'], backen: ['gestern', 'einen Kuchen'], helfen: ['gestern', 'Lara'],
+  telefonieren: ['gestern', 'mit Tim'], fotografieren: ['gestern', 'Wolken'], studieren: ['früher', 'Medizin']
+};
 const HABEN_F = ['habe', 'hast', 'hat', 'haben', 'habt', 'haben'];
 const SEIN_F = ['bin', 'bist', 'ist', 'sind', 'seid', 'sind'];
 const SUBJ = [['ich', 'yo'], ['du', 'tú'], ['er', 'él'], ['wir', 'nosotros'], ['ihr', 'ustedes (informal)'], ['sie', 'ellos']];
@@ -152,9 +162,11 @@ function genL7PerfH() {
   PART.filter(x => x[2] === 'haben').forEach((x, i) => {
     const s = SUBJ[i % 6];
     out.push(M.ty('Participio (Partizip II) de «' + x[0] + '» (' + x[3] + '):', x[1], partWhy(x), 'Participio'));
-    const wrong = [x[1].replace(/^ge/, ''), 'ge' + x[0].replace(/en$/, '') + (x[4] === 'ge...en' ? 't' : 'en'), x[0]].filter(w => w !== x[1]);
+    const wrong = [x[1].replace(/^ge/, ''), 'ge' + x[0].replace(/en$/, '') + (x[4] === 'ge...en' ? 't' : 'en'), x[0], 'ge' + x[1]].filter(w => w !== x[1]).filter((w, j, arr) => arr.indexOf(w) === j).slice(0, 3);
     out.push(M.mc('¿Cuál es el participio de «' + x[0] + '»?', x[1], wrong, partWhy(x), 'Participio'));
-    out.push(M.ty(s[0].charAt(0).toUpperCase() + s[0].slice(1) + ' ___ gestern ' + (x[0] === 'kosten' ? 'viel' : '...') + ' ' + x[1] + '. (haben, Perfekt)', HABEN_F[i % 6], 'Perfekt = haben conjugado (posición 2) + participio al final. Con «' + s[0] + '»: ' + HABEN_F[i % 6] + '. ' + partWhy(x), 'Perfekt'));
+    if (x[0] === 'kosten') { out.push(M.ty('Das Buch ___ zehn Euro gekostet. (haben, Perfekt)', 'hat', 'Sujeto «das Buch» = er/sie/es → hat. ' + partWhy(x), 'Perfekt')); return; }
+    const o = PART_OBJ[x[0]] || ['gestern', ''];
+    out.push(M.ty(s[0].charAt(0).toUpperCase() + s[0].slice(1) + ' ___ ' + o[0] + (o[1] ? ' ' + o[1] : '') + ' ' + x[1] + '. (haben, Perfekt)', HABEN_F[i % 6], 'Perfekt = haben conjugado (posición 2) + participio al final. Con «' + s[0] + '»: ' + HABEN_F[i % 6] + '. ' + partWhy(x), 'Perfekt'));
   });
   const SENT = [
     ['Ayer jugué fútbol.', ['Ich', 'habe', 'gestern', 'Fußball', 'gespielt'], [['Gestern', 'habe', 'ich', 'Fußball', 'gespielt']]],

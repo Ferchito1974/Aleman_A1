@@ -198,7 +198,7 @@ WL_ALL.filter(e => e.t === 'v').forEach(e => { if (!WL_VERB_ES[e.w]) WL_VERB_ES[
 function wlTable(n) {
   const rows = wlLesson(n);
   const nouns = rows.filter(e => e.noun), other = rows.filter(e => !e.noun);
-  const head = '<div class="tw"><table class="t voc wl"><thead><tr><th>Alemán</th><th>Se pronuncia</th><th>Español</th></tr></thead><tbody>';
+  const head = '<div class="tw"><table class="t voc ph wl"><thead><tr><th>Alemán</th><th>Se pronuncia</th><th>Español</th></tr></thead><tbody>';
   const nounRows = nouns.map(e => '<tr><td>' + spk(e.de) + A(e.t, '<b>' + e.w + '</b>') + (wlPlural(e) ? '<br><small>' + (e.pl === 'Sg' || e.pl === 'Pl' ? wlPlural(e) : 'pl. ' + wlPlural(e)) + '</small>' : '') + '</td><td class="pr">' + pron(e.de) + '</td><td class="es" data-reveal>' + e.es + '</td></tr>').join('');
   const otherRows = other.map(e => '<tr><td>' + spk(e.w.replace(/-$/, '')) + '<b>' + e.w + '</b>' + (e.t === 'v' ? '<br><small>verbo</small>' : '') + '</td><td class="pr">' + pron(e.w.replace(/\.\.\./g, '')) + '</td><td class="es" data-reveal>' + e.es + '</td></tr>').join('');
   return '<h4>Sustantivos (' + nouns.length + ')</h4>' + head + nounRows + '</tbody></table></div>' +
