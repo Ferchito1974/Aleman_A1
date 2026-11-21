@@ -29,7 +29,11 @@ Edita solo `mis-preguntas.js` (tiene instrucciones y ejemplos en comentarios). L
 El progreso se guarda en el navegador (localStorage, clave `aleman-a1-v2`), por dispositivo y por dirección web. La v3 usa la misma clave, así que no se pierde nada al actualizar. Si cambias de dispositivo o de dominio, usa Exportar/Importar progreso dentro de la app. Los identificadores de pregunta dependen del texto: si editas el texto de una pregunta, su progreso se reinicia.
 
 ## Audio y pronunciación
-El botón 🔊 usa la voz alemana del dispositivo (speechSynthesis, de-DE). Si no hay voz alemana instalada, el audio no suena y la pronunciación escrita sigue disponible. La pronunciación escrita es una aproximación con letras del español (reglas en `pron.js` más excepciones revisadas en `OVR`).
+El botón 🔊 reproduce audios MP3 grabados con una voz alemana (Piper, voz «thorsten», dataset Thorsten-Voice con licencia CC0). Están en la carpeta `audio/`, así que suenan igual en cualquier computadora o teléfono sin instalar voces. Si un texto no tiene audio (por ejemplo, algo nuevo en `mis-preguntas.js`), la app usa la voz alemana del dispositivo; si el dispositivo no tiene voz alemana, no lee nada en lugar de leer con la voz en español.
+
+Para generar los audios de contenido nuevo: `python tools/make_audio.py RUTA/de_DE-thorsten-medium.onnx` (requiere `pip install piper-tts`, ffmpeg y el modelo de https://huggingface.co/rhasspy/piper-voices). Solo crea los que faltan.
+
+La pronunciación escrita es una aproximación con letras del español (reglas en `pron.js` más excepciones revisadas en `OVR`).
 
 ## Archivos
 | Archivo | Contenido |
@@ -44,9 +48,10 @@ El botón 🔊 usa la voz alemana del dispositivo (speechSynthesis, de-DE). Si n
 | `content_contexto.js` | Frases con el vocabulario de la Wortliste |
 | `levels_v3.js` | Orden e iconos de todos los niveles |
 | `lessons.js` | Textos de repaso de los niveles antiguos |
-| `pron.js`, `check.js` | Pronunciación y audio; corrector de respuestas |
+| `pron.js`, `check.js` | Pronunciación escrita y voz del dispositivo; corrector de respuestas |
+| `audio.js`, `audio/` | Reproductor y audios MP3 en alemán (manifiesto en `audio/manifest.js`) |
 | `mis-preguntas.js`, `custom.js` | Preguntas propias |
-| `tools/` | Verificación (`verify.py`), auditoría de cobertura (`audit.py`, informe en `audit-report.md`) y capturas (`screens.py`) |
+| `tools/` | Verificación (`verify.py`), auditoría de cobertura (`audit.py`, informe en `audit-report.md`) capturas (`screens.py`) y audios (`make_audio.py`) |
 
 ## Verificación (para quien mantenga la app)
 Requiere Python con Playwright (`pip install playwright` y `python -m playwright install chromium`).

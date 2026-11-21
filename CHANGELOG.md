@@ -1,5 +1,10 @@
 # Cambios
 
+## v3.1
+- Audio con voz alemana grabada (Piper «thorsten», licencia CC0) para todo el alemán de la app: suena bien en cualquier PC sin instalar voces de Windows.
+- Si falta un audio, se usa la voz del dispositivo solo si es alemana (antes podía leer con la voz en español).
+- `tools/make_audio.py` para generar los audios de contenido nuevo.
+
 ## v3
 - Lección 7 completa: können, wollen, Perfekt con haben, Perfekt con sein y «schon mal / noch nie», hobbys y cursos, lecturas (historia de Walter, foro de consejos, correo en Perfekt) y small talk del Arbeitsbuch. Simulacro propio («Repaso lección 7», exam 3).
 - Wortliste completa leída del PDF (LWS 1 a 26): 603 palabras con artículo, plural, pronunciación y traducción, con un nivel por lección y la lista «Meine Wörter im Kurs».
