@@ -241,7 +241,7 @@ function genGAkk() { // der vs den
   return out;
 }
 LESSONS.gakk = () => box('der o den: nominativo y acusativo (p. 78)', '<p>El <b>sujeto</b> (quién hace la acción, y todo lo que va con <b>sein</b>) va en <b>nominativo</b>. El <b>objeto directo</b> (lo que tengo, compro, como, busco...) va en <b>acusativo</b>. Solo cambia el masculino.</p>') +
-  tbl(['', 'Nominativo', 'Acusativo'], [['<span class="art m">masculino</span>', 'der / ein / kein Tisch', '<b>den / einen / keinen</b> Tisch'], ['<span class="art n">neutro</span>', 'das / ein / kein Bett', 'das / ein / kein Bett'], ['<span class="art f">femenino</span>', 'die / eine / keine Lampe', 'die / eine / keine Lampe'], ['<span class="art p">plural</span>', 'die / — / keine Stühle', 'die / — / keine Stühle']]) +
+  tbl(['', 'Nominativo', 'Acusativo'], [['<span class="art m">masculino</span>', 'der / ein / kein Tisch', '<b>den / einen / keinen</b> Tisch'], ['<span class="art n">neutro</span>', 'das / ein / kein Bett', 'das / ein / kein Bett'], ['<span class="art f">femenino</span>', 'die / eine / keine Lampe', 'die / eine / keine Lampe'], ['<span class="art p">plural</span>', 'die / (sin artículo) / keine Stühle', 'die / (sin artículo) / keine Stühle']]) +
   ph('Ejemplos', [['Der Tisch ist neu.', 'La mesa es nueva.'], ['Ich kaufe den Tisch.', 'Compro la mesa.'], ['Ich habe einen Hund.', 'Tengo un perro.'], ['Ich brauche keinen Computer.', 'No necesito computadora.']]);
 
 function genGDoch() { // ja / nein / doch
