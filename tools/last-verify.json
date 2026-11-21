@@ -1,0 +1,366 @@
+[
+ {
+  "id": "l1greet",
+  "group": "Lección 1",
+  "exam": 1,
+  "title": "Saludos y despedidas",
+  "n": 94
+ },
+ {
+  "id": "l1name",
+  "group": "Lección 1",
+  "exam": 1,
+  "title": "Nombre, origen e idiomas",
+  "n": 214
+ },
+ {
+  "id": "l1abc",
+  "group": "Lección 1",
+  "exam": 1,
+  "title": "Alfabeto, deletrear y datos",
+  "n": 179
+ },
+ {
+  "id": "wl0",
+  "group": "Lección 1",
+  "exam": 1,
+  "title": "Palabras de la clase (instrucciones)",
+  "n": 73
+ },
+ {
+  "id": "wl1",
+  "group": "Lección 1",
+  "exam": 1,
+  "title": "Wortliste completa de la lección 1",
+  "n": 309
+ },
+ {
+  "id": "l2family",
+  "group": "Lección 2",
+  "exam": 1,
+  "title": "La familia y los posesivos",
+  "n": 189
+ },
+ {
+  "id": "l2feel",
+  "group": "Lección 2",
+  "exam": 1,
+  "title": "¿Cómo estás? y los pronombres",
+  "n": 113
+ },
+ {
+  "id": "l2data",
+  "group": "Lección 2",
+  "exam": 1,
+  "title": "Números 0 a 20, datos y lugares",
+  "n": 248
+ },
+ {
+  "id": "wl2",
+  "group": "Lección 2",
+  "exam": 1,
+  "title": "Wortliste completa de la lección 2",
+  "n": 295
+ },
+ {
+  "id": "l3food",
+  "group": "Lección 3",
+  "exam": 1,
+  "title": "Alimentos y plurales",
+  "n": 177
+ },
+ {
+  "id": "l3art",
+  "group": "Lección 3",
+  "exam": 1,
+  "title": "ein / kein y preguntas de sí o no",
+  "n": 125
+ },
+ {
+  "id": "l3shop",
+  "group": "Lección 3",
+  "exam": 1,
+  "title": "Precios, cantidades y compras",
+  "n": 274
+ },
+ {
+  "id": "l3eat",
+  "group": "Lección 3",
+  "exam": 1,
+  "title": "Comer, beber y gustos",
+  "n": 134
+ },
+ {
+  "id": "verbs123",
+  "group": "Lección 3",
+  "exam": 1,
+  "title": "Verbos de las lecciones 1 a 3",
+  "n": 139
+ },
+ {
+  "id": "wl3",
+  "group": "Lección 3",
+  "exam": 1,
+  "title": "Wortliste completa de la lección 3",
+  "n": 399
+ },
+ {
+  "id": "rooms",
+  "group": "Lección 4",
+  "exam": 2,
+  "title": "La casa y las habitaciones",
+  "n": 64
+ },
+ {
+  "id": "furniture",
+  "group": "Lección 4",
+  "exam": 2,
+  "title": "Muebles, baño y electrodomésticos",
+  "n": 122
+ },
+ {
+  "id": "adj",
+  "group": "Lección 4",
+  "exam": 2,
+  "title": "Describir: adjetivos, colores y gustar",
+  "n": 72
+ },
+ {
+  "id": "numbers",
+  "group": "Lección 4",
+  "exam": 2,
+  "title": "Números y anuncios de vivienda",
+  "n": 45
+ },
+ {
+  "id": "r4",
+  "group": "Lección 4",
+  "exam": 2,
+  "title": "Lectura: cuarto libre y anuncios de vivienda",
+  "n": 42
+ },
+ {
+  "id": "wl4",
+  "group": "Lección 4",
+  "exam": 2,
+  "title": "Wortliste completa de la lección 4",
+  "n": 390
+ },
+ {
+  "id": "art",
+  "group": "Gramática y verbos (4 a 6)",
+  "exam": 2,
+  "title": "Artículos y pronombres",
+  "n": 74
+ },
+ {
+  "id": "neg",
+  "group": "Gramática y verbos (4 a 6)",
+  "exam": 2,
+  "title": "Negación: nicht y kein",
+  "n": 19
+ },
+ {
+  "id": "verbs",
+  "group": "Gramática y verbos (4 a 6)",
+  "exam": 2,
+  "title": "Conjugación de verbos",
+  "n": 334
+ },
+ {
+  "id": "teacher",
+  "group": "Gramática y verbos (4 a 6)",
+  "exam": 2,
+  "title": "Las actividades de la maestra",
+  "n": 75
+ },
+ {
+  "id": "order",
+  "group": "Gramática y verbos (4 a 6)",
+  "exam": 2,
+  "title": "Estructura de la frase",
+  "n": 30
+ },
+ {
+  "id": "gart",
+  "group": "Temas de la maestra",
+  "exam": 2,
+  "title": "Artículo definido y pronombres personales",
+  "n": 93
+ },
+ {
+  "id": "gneg",
+  "group": "Temas de la maestra",
+  "exam": 2,
+  "title": "Negación: nicht o kein (intensivo)",
+  "n": 99
+ },
+ {
+  "id": "gakk",
+  "group": "Temas de la maestra",
+  "exam": 2,
+  "title": "der o den: nominativo y acusativo",
+  "n": 97
+ },
+ {
+  "id": "gdoch",
+  "group": "Temas de la maestra",
+  "exam": 2,
+  "title": "ja, nein, doch (intensivo)",
+  "n": 36
+ },
+ {
+  "id": "guhr",
+  "group": "Temas de la maestra",
+  "exam": 2,
+  "title": "Uhrzeiten: hora formal e informal",
+  "n": 56
+ },
+ {
+  "id": "gteach",
+  "group": "Temas de la maestra",
+  "exam": 2,
+  "title": "Verbos de la maestra: conjugación completa",
+  "n": 87
+ },
+ {
+  "id": "gsep",
+  "group": "Temas de la maestra",
+  "exam": 2,
+  "title": "Separables e irregulares (e/i, a/ä)",
+  "n": 166
+ },
+ {
+  "id": "gord",
+  "group": "Temas de la maestra",
+  "exam": 2,
+  "title": "Orden de palabras (intensivo)",
+  "n": 33
+ },
+ {
+  "id": "time",
+  "group": "Lección 5",
+  "exam": 2,
+  "title": "La hora",
+  "n": 208
+ },
+ {
+  "id": "when",
+  "group": "Lección 5",
+  "exam": 2,
+  "title": "Días, partes del día y am / um / von bis",
+  "n": 85
+ },
+ {
+  "id": "r5",
+  "group": "Lección 5",
+  "exam": 2,
+  "title": "Lectura: Berlín, Franziska y el cómic",
+  "n": 43
+ },
+ {
+  "id": "wl5",
+  "group": "Lección 5",
+  "exam": 2,
+  "title": "Wortliste completa de la lección 5",
+  "n": 332
+ },
+ {
+  "id": "acc",
+  "group": "Lección 6",
+  "exam": 2,
+  "title": "Akkusativ: der → den",
+  "n": 74
+ },
+ {
+  "id": "jandoch",
+  "group": "Lección 6",
+  "exam": 2,
+  "title": "Ja, nein, doch",
+  "n": 22
+ },
+ {
+  "id": "weather",
+  "group": "Lección 6",
+  "exam": 2,
+  "title": "El clima y las estaciones",
+  "n": 95
+ },
+ {
+  "id": "hobby",
+  "group": "Lección 6",
+  "exam": 2,
+  "title": "Tiempo libre y hobbys",
+  "n": 85
+ },
+ {
+  "id": "food",
+  "group": "Lección 6",
+  "exam": 2,
+  "title": "En el Imbiss: comer y pedir",
+  "n": 119
+ },
+ {
+  "id": "r6",
+  "group": "Lección 6",
+  "exam": 2,
+  "title": "Lectura: Reiseland D-A-CH y clubes",
+  "n": 28
+ },
+ {
+  "id": "wl6",
+  "group": "Lección 6",
+  "exam": 2,
+  "title": "Wortliste completa de la lección 6",
+  "n": 378
+ },
+ {
+  "id": "l7kann",
+  "group": "Lección 7",
+  "exam": 3,
+  "title": "können: lo que sé hacer",
+  "n": 108
+ },
+ {
+  "id": "l7will",
+  "group": "Lección 7",
+  "exam": 3,
+  "title": "wollen: deseos y propuestas",
+  "n": 85
+ },
+ {
+  "id": "l7perfh",
+  "group": "Lección 7",
+  "exam": 3,
+  "title": "Perfekt con haben",
+  "n": 123
+ },
+ {
+  "id": "l7perfs",
+  "group": "Lección 7",
+  "exam": 3,
+  "title": "Perfekt con sein y «schon mal»",
+  "n": 72
+ },
+ {
+  "id": "l7hob",
+  "group": "Lección 7",
+  "exam": 3,
+  "title": "Hobbys, cursos y frecuencia",
+  "n": 83
+ },
+ {
+  "id": "l7read",
+  "group": "Lección 7",
+  "exam": 3,
+  "title": "Lectura: aprender idiomas y small talk",
+  "n": 72
+ },
+ {
+  "id": "wl7",
+  "group": "Lección 7",
+  "exam": 3,
+  "title": "Wortliste completa de la lección 7",
+  "n": 172
+ }
+]
