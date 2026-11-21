@@ -9,7 +9,7 @@
 - Pronunciación: unas 200 excepciones nuevas en `OVR` revisadas con la lista completa de palabras.
 - Rediseño: `styles.css`, modo claro y oscuro con interruptor, portada con anillo de progreso y racha de estudio, tarjetas de nivel con icono y estado, quiz con iconos, animaciones suaves y barra de sesión, tablas legibles en 420 px.
 - Verificación automática con Playwright (`tools/verify.py`) y capturas (`tools/screens.py`).
-- Total: 55 niveles y 7386 preguntas. La clave de progreso no cambia (`aleman-a1-v2`).
+- Total: 55 niveles y 7393 preguntas. La clave de progreso no cambia (`aleman-a1-v2`).
 
 ## v2
 - Lecciones 1 a 3 agregadas (11 niveles nuevos), total 27 niveles y 3341 preguntas.

@@ -7,7 +7,7 @@ App para que estudie .-.
 Sitio: **https://ferchito1974.github.io/Aleman_A1/**
 
 ## Qué contiene (v3)
-- 55 niveles y 7386 preguntas (opción múltiple, escritura con corrector y ordenar frases).
+- 55 niveles y 7393 preguntas (opción múltiple, escritura con corrector y ordenar frases).
 - Lecciones 1 a 7 del Kursbuch, incluida la lección 7 completa (können, wollen, Perfekt con haben y sein, hobbys, lecturas).
 - La Wortliste completa (Lernwortschatz LWS 1 a 26): 603 palabras con artículo, plural, pronunciación y traducción.
 - Temas de la maestra con nivel propio: artículo definido y pronombres, nicht o kein, der o den, ja/nein/doch, hora formal e informal, verbos de la maestra, separables e irregulares, orden de palabras.
