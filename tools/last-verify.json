@@ -98,6 +98,13 @@
   "n": 139
  },
  {
+  "id": "ctx13",
+  "group": "Lección 3",
+  "exam": 1,
+  "title": "Vocabulario en frases (lecciones 1 a 3)",
+  "n": 137
+ },
+ {
   "id": "wl3",
   "group": "Lección 3",
   "exam": 1,
@@ -308,6 +315,13 @@
   "n": 28
  },
  {
+  "id": "ctx46",
+  "group": "Lección 6",
+  "exam": 2,
+  "title": "Vocabulario en frases (lecciones 4 a 6)",
+  "n": 130
+ },
+ {
   "id": "wl6",
   "group": "Lección 6",
   "exam": 2,
@@ -355,6 +369,13 @@
   "exam": 3,
   "title": "Lectura: aprender idiomas y small talk",
   "n": 72
+ },
+ {
+  "id": "ctx7",
+  "group": "Lección 7",
+  "exam": 3,
+  "title": "Vocabulario en frases (lección 7)",
+  "n": 39
  },
  {
   "id": "wl7",
