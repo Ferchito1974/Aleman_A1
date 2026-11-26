@@ -1,5 +1,11 @@
 # Cambios
 
+## v3.4 (25/11/2026)
+- Nuevo grupo «Arbeitsbuch und Tests» (primero en la portada): un «Arbeitsbuch-Training» por lección con 90 ejercicios y 485 huecos en el formato del Arbeitsbuch (diálogos con varios huecos, banco de palabras, «Was passt nicht?», «Schreiben Sie Sätze»), todos de redacción propia.
+- «Test Lektion 1 a 7» como en el libro: 2 ejercicios de Wörter, 3 de Grammatik y 2 de Kommunikation, con puntos por hueco, resultado por sección y semáforo (🟢 80 % o más, 🟡 60 a 79 %, 🔴 menos de 60 %). Cada test sale distinto.
+- Perfekt reforzado en la lección 7: participios (ge-t, ge-en, -iert), haben o sein, diálogos y correos en Perfekt, pasar del presente al Perfekt y escribir oraciones.
+- Más práctica de las preposiciones de tiempo (im Sommer, in der Nacht, am, um, von ... bis).
+
 ## v3.3 (20/11/2026)
 - La versión y la fecha de actualización se muestran al pie de la portada.
 

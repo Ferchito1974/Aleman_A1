@@ -288,3 +288,22 @@ body.nospeech .spk { display: none; }
 
 /* versión al pie de la portada */
 .version { text-align: center; color: var(--muted); font-size: .85rem; margin: 28px 0 0; padding-top: 14px; border-top: 1px solid var(--line); font-variant-numeric: tabular-nums; }
+
+/* ---------- v3.4: ejercicios tipo Arbeitsbuch (huecos) y Test Lektion ---------- */
+.bankline { display: flex; flex-wrap: wrap; gap: 6px; padding: 10px; margin: 0 0 12px; border: 1.5px dashed var(--line-2); border-radius: var(--radius-s); background: var(--surface-2); }
+.bw { font-weight: 650; font-size: .92rem; padding: 4px 10px; border-radius: 8px; background: var(--surface); border: 1px solid var(--line); }
+.cloze { display: grid; gap: 6px; margin-bottom: 10px; }
+.cl { margin: 0; line-height: 2.5; font-size: 1.04rem; }
+.spk-mark { color: var(--accent); font-weight: 800; margin-right: 4px; }
+.gap { font: inherit; font-size: 1rem; min-height: 40px; padding: 4px 8px; margin: 0 3px; border: 1.5px solid var(--line-2); border-bottom-width: 2.5px; border-radius: 8px; background: var(--surface-2); color: var(--ink); max-width: 100%; vertical-align: baseline; }
+input.gap:focus, select.gap:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+select.gap { padding-right: 4px; cursor: pointer; }
+.gap.ok { border-color: var(--ok); background: var(--ok-soft); }
+.gap.bad { border-color: var(--bad); background: var(--bad-soft); text-decoration: line-through; }
+.gap:disabled { opacity: 1; color: var(--ink); }
+.fix { display: inline-block; font-weight: 750; color: var(--ok); margin: 0 4px 0 2px; }
+.fix::before { content: '→ '; color: var(--muted); font-weight: 500; }
+.solved { margin: .4em 0 .6em; }
+.solved p { margin: .25em 0; display: flex; align-items: center; gap: 4px; }
+.test-result .tl { font-size: 1.15rem; font-weight: 700; }
+.test-result.ok .score { color: var(--ok); } .test-result.almost .score { color: var(--warn); } .test-result.bad .score { color: var(--bad); }

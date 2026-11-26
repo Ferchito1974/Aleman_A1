@@ -2,8 +2,8 @@
 'use strict';
 
 /* Versión visible al pie de la portada: súbela en cada publicación (ver CHANGELOG.md) */
-const APP_VERSION = '3.3';
-const APP_DATE = '20/11/2026';
+const APP_VERSION = '3.4';
+const APP_DATE = '25/11/2026';
 const KEY = 'aleman-a1-v2';
 const OLD_KEY = 'aleman-a1-lecciones-4-6-v1';
 let store = { q: {}, set: { strict: false } };
@@ -92,26 +92,30 @@ function initState() {
   Q.fb = null;
   if (q.kind === 'mc') Q.st = { order: shuffle(q.opts) };
   else if (q.kind === 'build') Q.st = { bank: shuffle(q.tokens.concat(q.extra || [])).map((t, i) => ({ t, i })), placed: [] };
+  else if (q.kind === 'cloze') Q.st = { vals: q.gaps.map(() => '') }; // v3.4: ejercicios tipo Arbeitsbuch
   else Q.st = {};
   Q.st.tr = false; // v3.2: traducción cerrada al empezar cada pregunta
 }
 
 /* ---------- respuesta, pronunciación y feedback ---------- */
 function answerText(q) {
+  if (q.kind === 'cloze') return clozeSolved(q).join(' / ');
   if (q.kind === 'mc') return q.ans;
   if (q.kind === 'type') return q.answers[0];
   return q.tokens.join(' ');
 }
 /* texto alemán asociado a la pregunta, con su traducción, para mostrar pronunciación */
 function infoOf(q) {
+  if (q.kind === 'cloze') return null;
   if (q.info && q.info.de) return q.info;
   if (q.kind === 'build') return { de: q.tokens.join(' '), es: q.es };
   if (q.kind === 'type') { const a = q.answers[0]; if (/^[0-9]/.test(a) || /[a-zäöüß]/i.test(a)) return { de: a, es: '' }; }
   if (q.kind === 'mc' && /Cómo se dice|en alemán|Traduce|alemán:/i.test(q.q)) return { de: q.ans, es: '' };
   return null;
 }
-function submit(ok, note, shown, almost) {
+function submit(ok, note, shown, almost, earned) {
   const Q = S.quiz; const cur = Q.queue[0]; const q = cur.q;
+  if (Q.test && cur.retry === 0) { const sec = q.sec || 'G'; Q.pts[sec] = (Q.pts[sec] || 0) + (earned !== undefined ? earned : (ok ? 1 : 0)); Q.max[sec] = (Q.max[sec] || 0) + (q.pts || 1); }
   Q.anim = ok ? 'ok' : 'bad'; // v3: animación de la tarjeta
   if (cur.retry === 0) {
     touchStreak(); // v3: racha de estudio
@@ -121,12 +125,12 @@ function submit(ok, note, shown, almost) {
     store.q[q.id] = s; save();
     Q.firstDone++;
   }
-  Q.fb = { ok, almost: !!almost, note: note || '', shown: shown || answerText(q), willRepeat: !ok && cur.retry < 2 };
+  Q.fb = { ok, almost: !!almost, note: note || '', shown: shown || answerText(q), willRepeat: !ok && cur.retry < 2 && !Q.test, earned };
   render();
 }
 function next() {
   const Q = S.quiz; const cur = Q.queue.shift();
-  if (Q.fb && !Q.fb.ok && cur.retry < 2) Q.queue.splice(Math.min(3, Q.queue.length), 0, { q: cur.q, retry: cur.retry + 1 });
+  if (Q.fb && !Q.fb.ok && cur.retry < 2 && !Q.test) Q.queue.splice(Math.min(3, Q.queue.length), 0, { q: cur.q, retry: cur.retry + 1 });
   if (!Q.queue.length) { go('summary'); return; }
   initState(); render(); window.scrollTo(0, 0);
 }
@@ -211,6 +215,7 @@ function viewLevel() {
   } else {
     h += '<div class="card"><p>' + bar(p.pct, p.pct === 100 ? 'done' : '') + '</p><p><b>' + p.known + '</b> de ' + p.total + ' contestadas bien · <b>' + p.mastered + '</b> dominadas.</p>' +
       '<p class="muted">Cada sesión prioriza lo que no has visto y lo que fallaste. Lo que falles reaparece unas preguntas después hasta que lo aciertes.</p>' +
+      (l.test ? '<div class="row"><button class="btn primary" data-act="abtest" data-l="' + l.test + '">📝 Test Lektion ' + l.test + '</button></div>' : '') +
       '<div class="row"><button class="btn primary" data-act="start" data-n="10">10 preguntas</button><button class="btn" data-act="start" data-n="20">20 preguntas</button><button class="btn" data-act="start" data-n="40">40 preguntas</button></div></div>';
   }
   return h;
@@ -236,7 +241,19 @@ function viewQuiz() {
     if (tb) h += '<button class="trbtn" data-act="tr" aria-expanded="' + (Q.st.tr ? 'true' : 'false') + '">🌐 ' + (Q.st.tr ? 'Übersetzung ausblenden' : 'Übersetzen') + '</button>' + (Q.st.tr ? tb : '');
   } else if (q.kind === 'build') h += '<p class="qq">Ordena las palabras para decir: <b>' + esc(q.es) + '</b></p>';
   else h += '<p class="qq">' + q.q + '</p>';
-  if (q.kind === 'mc') {
+  if (q.kind === 'cloze') {
+    if (!DE) h = h.replace('<p class="qq">' + q.q + '</p>', '<p class="qq">' + esc(q.tr) + '</p>');
+    const res = Q.fb ? clozeCheck(q, Q.st.vals) : null;
+    if (q.bank) h += '<div class="bankline">' + q.bank.map(w => '<span class="bw">' + esc(w) + '</span>').join('') + '</div>';
+    h += '<div class="cloze">' + q.segs.map(row => '<p class="cl">' + row.map(sg => {
+      if (typeof sg === 'string') return esc(sg).replace(/^(\s*)([◆○])/, '$1<span class="spk-mark">$2</span>');
+      const g = q.gaps[sg.g]; const v = Q.st.vals[sg.g] || ''; const st = res ? (res[sg.g] ? ' ok' : ' bad') : '';
+      const fix = res && !res[sg.g] ? '<span class="fix">' + esc(g.ans[0]) + '</span>' : '';
+      if (g.opts) return '<select class="gap' + st + '" data-g="' + sg.g + '"' + (Q.fb ? ' disabled' : '') + ' aria-label="Hueco ' + (sg.g + 1) + '"><option value="">…</option>' + g.opts.map(o => '<option' + (o === v ? ' selected' : '') + '>' + esc(o) + '</option>').join('') + '</select>' + fix;
+      return '<input class="gap' + st + '" data-g="' + sg.g + '" value="' + esc(v) + '" size="' + Math.max(4, Math.min(28, g.ans[0].length + 2)) + '" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"' + (Q.fb ? ' disabled' : '') + ' aria-label="Hueco ' + (sg.g + 1) + '">' + fix;
+    }).join('') + '</p>').join('') + '</div>';
+    if (!Q.fb) h += '<div class="keys">' + ['ä', 'ö', 'ü', 'ß'].map(c => '<button class="key" data-act="insg" data-c="' + c + '">' + c + '</button>').join('') + '</div><div class="row"><button class="btn primary" data-act="checkc">' + L.check + '</button><button class="btn ghost" data-act="idk">' + L.idk + '</button></div>';
+  } else if (q.kind === 'mc') {
     h += '<div class="opts">' + Q.st.order.map((o, i) => {
       let c = 'opt';
       if (Q.fb) { if (o === q.ans) c += ' right'; else if (Q.st.chosen === o) c += ' wrong'; }
@@ -254,7 +271,8 @@ function viewQuiz() {
     const verdict = DE ? (Q.fb.ok ? (Q.fb.almost ? 'Fast richtig!' : 'Richtig!') : 'Leider falsch.') : (Q.fb.ok ? (Q.fb.almost ? 'Casi, pero se acepta' : 'Correcto') : (Q.fb.almost ? 'Casi, pero en modo estricto cuenta como error' : 'Todavía no'));
     const vicon = Q.fb.ok ? (Q.fb.almost ? '≈' : '✓') : '✗';
     h += '<div class="fb ' + (Q.fb.ok ? (Q.fb.almost ? 'almost' : 'ok') : 'bad') + '" role="status" aria-live="polite"><p class="verdict"><span class="vi" aria-hidden="true">' + vicon + '</span>' + verdict + '</p>' +
-      (Q.fb.ok && q.kind === 'mc' ? '' : '<p class="ca">' + L.sol + ': <b>' + esc(Q.fb.shown) + '</b></p>') + pronLine(q) +
+      (q.kind === 'cloze' ? '<p class="ca"><b>' + (Q.fb.earned || 0) + ' / ' + q.pts + '</b> ' + (DE ? 'Punkte' : 'puntos') + '</p><div class="solved">' + clozeSolved(q).map(t => '<p>' + speaker(clozeSay(t)) + esc(t) + '</p>').join('') + '</div>'
+        : (Q.fb.ok && q.kind === 'mc' ? '' : '<p class="ca">' + L.sol + ': <b>' + esc(Q.fb.shown) + '</b></p>')) + pronLine(q) +
       (DE ? '<details class="whybox"' + (Q.fb.ok && !Q.fb.almost ? '' : ' open') + '><summary>' + L.why + '</summary>' + (Q.fb.note ? '<p class="note">' + esc(Q.fb.note) + '</p>' : '') + '<p class="why">' + q.why + '</p></details>'
         : (Q.fb.note ? '<p class="note">' + esc(Q.fb.note) + '</p>' : '') + '<p class="why"><b>Por qué:</b> ' + q.why + '</p>') +
       (Q.fb.willRepeat ? '<p class="note">' + L.again + '</p>' : '') +
@@ -265,6 +283,7 @@ function viewQuiz() {
 
 function viewSummary() {
   const Q = S.quiz; const acc = Math.round(100 * Q.firstOk / Q.total);
+  if (Q.test) return viewTestSummary(Q);
   let h = '<div class="top"><button class="btn ghost" data-act="' + (Q.back === 'level' ? 'level2' : 'home') + '">← Volver</button></div><h1>Sesión terminada</h1>';
   h += '<div class="card big"><div class="score">' + acc + '%</div><p>' + Q.firstOk + ' de ' + Q.total + ' a la primera. ' + (acc >= 85 ? 'Muy bien: este bloque ya se ve sólido.' : acc >= 60 ? 'Vas bien. Repite para consolidar.' : 'Normal al empezar: repite la sesión, cada vuelta ayuda.') + '</p>' + bar(acc, acc >= 85 ? 'done' : '') + '</div>';
   const tags = Object.entries(Q.tagMiss).sort((a, b) => b[1] - a[1]);
@@ -273,6 +292,19 @@ function viewSummary() {
     h += '<h2 class="sec">Lo que fallaste, con su explicación</h2>' + Q.missed.map(q => '<div class="card miss"><p class="qq">' + (q.kind === 'build' ? 'Ordena: <b>' + esc(q.es) + '</b>' : q.q) + '</p><p class="ca">Respuesta: <b>' + esc(answerText(q)) + '</b></p>' + pronLine(q) + '<p class="why"><b>Por qué:</b> ' + q.why + '</p></div>').join('');
   } else h += '<p class="muted">No fallaste ninguna a la primera.</p>';
   h += '<div class="row"><button class="btn primary" data-act="again">Otra sesión igual</button><button class="btn" data-act="home">Ir a los niveles</button></div>';
+  return h;
+}
+
+function viewTestSummary(Q) { // v3.4: resultado del Test Lektion
+  const secs = ['W', 'G', 'K'].filter(k => Q.max[k]);
+  const P = secs.reduce((a, k) => a + Q.pts[k], 0), M = secs.reduce((a, k) => a + Q.max[k], 0);
+  const tl = trafficLight(P, M);
+  let h = '<div class="top"><button class="btn ghost" data-act="home">← Zurück</button></div><h1>Test Lektion ' + Q.test + '</h1>';
+  h += '<div class="card big test-result ' + tl[2] + '"><div class="score">' + P + ' / ' + M + '</div><p class="tl">' + tl[0] + ' ' + tl[1] + '</p>' + bar(Math.round(100 * P / M), tl[2] === 'ok' ? 'done' : '') + '</div>';
+  h += '<div class="tw"><table class="t"><thead><tr><th>Teil</th><th>Punkte</th><th></th></tr></thead><tbody>' + secs.map(k => { const t = trafficLight(Q.pts[k], Q.max[k]); return '<tr><td><b>' + AB_SEC[k] + '</b></td><td>' + Q.pts[k] + ' / ' + Q.max[k] + '</td><td>' + t[0] + '</td></tr>'; }).join('') + '</tbody></table></div>';
+  h += '<p class="muted small">Semáforo como en el libro: 🟢 80 % o más · 🟡 60 a 79 % · 🔴 menos de 60 %.</p>';
+  if (Q.missed.length) h += '<h2 class="sec">Fehler und Lösungen</h2>' + Q.missed.map(q => '<div class="card miss"><p class="qq">' + esc(q.q) + '</p><div class="solved">' + (q.kind === 'cloze' ? clozeSolved(q) : [answerText(q)]).map(t => '<p>' + speaker(q.kind === 'cloze' ? clozeSay(t) : t) + esc(t) + '</p>').join('') + '</div><details class="whybox"><summary>Erklärung (español)</summary><p class="why">' + q.why + '</p></details></div>').join('');
+  h += '<div class="row"><button class="btn primary" data-act="abtest" data-l="' + Q.test + '">Neuer Test</button><button class="btn" data-act="level" data-id="ab' + Q.test + '">Arbeitsbuch-Training</button><button class="btn ghost" data-act="home">Startseite</button></div>';
   return h;
 }
 
@@ -367,7 +399,11 @@ document.addEventListener('click', e => {
   else if (a === 'errors') { const m = allPool().filter(isMissed); S.last = { title: 'Mis errores', ids: LEVELS.map(l => l.id), n: 20, back: 'home', errors: true }; startQuiz('Mis errores', m, 20, 'home'); }
   else if (a === 'konj' || a === 'deonly') { const f = a === 'konj' ? (q => q.tag === 'Conjugación' || (q.de && q.tag !== 'Situationen')) : (q => q.de); const title = a === 'konj' ? 'Konjugationstrainer' : 'Nur Deutsch'; S.last = { title, ids: LEVELS.map(l => l.id), n: +t.dataset.n, back: 'home', filter: a }; startQuiz(title, allPool().filter(f), S.last.n, 'home'); }
   else if (a === 'tr') { Q.st.tr = !Q.st.tr; render(); }
+  else if (a === 'abtest') startTest(+t.dataset.l);
+  else if (a === 'checkc') { const q = Q.queue[0].q; const res = clozeCheck(q, Q.st.vals); const n = res.filter(Boolean).length; const all = n === res.length; submit(all, all ? '' : (n + ' de ' + res.length + ' huecos correctos. Los corregidos aparecen en verde.'), answerText(q), !all && n >= res.length - 1 && res.length >= 4, n); }
+  else if (a === 'insg') { const el = S.lastGap ? document.querySelector('input.gap[data-g="' + S.lastGap + '"]') : document.querySelector('input.gap'); if (el) { const p = el.selectionStart || el.value.length; el.value = el.value.slice(0, p) + t.dataset.c + el.value.slice(el.selectionEnd || p); Q.st.vals[+el.dataset.g] = el.value; el.focus(); el.setSelectionRange(p + 1, p + 1); } }
   else if (a === 'demode') { store.set.de = t.checked; save(); }
+  else if (a === 'again' && S.last && S.last.test) startTest(S.last.test);
   else if (a === 'again') { const L = S.last; const FL = { konj: q => q.tag === 'Conjugación' || (q.de && q.tag !== 'Situationen'), deonly: q => q.de }; const list = L.errors ? allPool().filter(isMissed) : L.filter ? allPool().filter(FL[L.filter]) : L.ids.flatMap(id => pool(id)); if (!list.length) go('home'); else startQuiz(L.title, list, L.n, L.back); }
   else if (a === 'chuleta') go('chuleta');
   else if (a === 'pron') go('pron');
@@ -385,7 +421,12 @@ document.addEventListener('click', e => {
   else if (a === 'checkb') { const q = Q.queue[0].q; const words = Q.st.placed.map(k => Q.st.bank.find(b => b.i === k).t); const r = diagnoseBuild(q, words); const j = judge(r); submit(j.ok, j.note, j.ok ? words.join(' ') : q.tokens.join(' '), j.almost); }
   else if (a === 'next') next();
 });
+document.addEventListener('input', e => { // v3.4: valores de los huecos
+  if (e.target.matches && e.target.matches('.gap') && S.quiz && S.quiz.st && S.quiz.st.vals) { S.quiz.st.vals[+e.target.dataset.g] = e.target.value; if (e.target.tagName === 'INPUT') S.lastGap = e.target.dataset.g; }
+});
+document.addEventListener('focusin', e => { if (e.target.matches && e.target.matches('input.gap')) S.lastGap = e.target.dataset.g; });
 document.addEventListener('change', e => {
+  if (e.target.matches && e.target.matches('select.gap') && S.quiz && S.quiz.st && S.quiz.st.vals) { S.quiz.st.vals[+e.target.dataset.g] = e.target.value; return; }
   if (e.target.id === 'hide-es') { S.hideEs = e.target.checked; render(); }
   if (e.target.id === 'imp' && e.target.files[0]) {
     const f = e.target.files[0]; const r = new FileReader();
