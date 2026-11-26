@@ -24,7 +24,7 @@ function abToQ(x) {
     if (last < line.length) row.push(line.slice(last));
     segs.push(row);
   });
-  const q = { id: level + ':' + hash(x.ins + '|' + x.lines.join('|')), level, kind: 'cloze', q: x.ins, tr: x.tr, why: x.why, tag: x.sec === 'L' ? 'Lesen' : 'Arbeitsbuch', sec: x.sec, segs, gaps, bank: x.bank || null, pts: gaps.length, de: true };
+  const q = { id: level + ':' + hash(x.ins + '|' + x.lines.join('|')), level, kind: 'cloze', q: x.ins, tr: x.tr, why: x.why, tag: x.sec === 'L' ? 'Lesen' : x.sec === 'H' ? 'Hören' : 'Arbeitsbuch', sec: x.sec, listen: x.listen || null, segs, gaps, bank: x.bank || null, pts: gaps.length, de: true };
   q.plain = x.lines.map(l => l.replace(/\[\[(.+?)\]\]/g, '___')).join(' ');
   return q;
 }
@@ -59,21 +59,25 @@ const AB_LEVELS = [1, 2, 3, 4, 5, 6, 7].map(n => ({
 });
 
 /* Test Lektion: elige ejercicios por sección, en orden W, G, K, sin repetir y con puntos */
-function startTest(n) {
-  const qs = pool('ab' + n);
+function startTest(spec) {
+  spec = String(spec);
+  const [lo, hi] = spec.includes('-') ? spec.split('-').map(Number) : [+spec, +spec];
+  const qs = []; for (let l = lo; l <= hi; l++) pool('ab' + l).forEach(q => qs.push(q));
+  const plan = Object.assign({}, AB_TEST_PLAN, lo !== hi ? { G: 4 } : {});
   const chosen = [];
-  ['W', 'G', 'K'].forEach(sec => { pick(qs.filter(q => q.sec === sec), AB_TEST_PLAN[sec]).forEach(q => chosen.push(q)); });
+  ['W', 'G', 'K', 'H', 'L', 'S'].forEach(sec => { pick(qs.filter(q => q.sec === sec), plan[sec] || 0).forEach(q => chosen.push(q)); });
   if (!chosen.length) return;
-  S.quiz = { title: 'Test Lektion ' + n, back: 'home', queue: chosen.map(q => ({ q, retry: 0 })), total: chosen.length, firstDone: 0, firstOk: 0, missed: [], tagMiss: {}, fb: null, st: null, test: n, pts: {}, max: {} };
-  S.last = { title: 'Test Lektion ' + n, test: n };
+  const title = lo === hi ? 'Test Lektion ' + lo : (lo === 1 && hi === 7 ? 'Gesamttest Lektion 1–7' : 'Test Lektion ' + lo + '–' + hi);
+  S.quiz = { title, back: 'home', queue: chosen.map(q => ({ q, retry: 0 })), total: chosen.length, firstDone: 0, firstOk: 0, missed: [], tagMiss: {}, fb: null, st: null, test: spec, single: lo === hi ? lo : 0, pts: {}, max: {} };
+  S.last = { title, test: spec };
   initState();
   go('quiz');
 }
 function trafficLight(p, m) { const r = m ? p / m : 0; return r >= 0.8 ? ['🟢', 'Sehr gut!', 'ok'] : r >= 0.6 ? ['🟡', 'Gut, aber üben Sie noch ein bisschen.', 'almost'] : ['🔴', 'Bitte noch einmal üben.', 'bad']; }
 
 /* ======================= v3.5: SCHREIBEN (tipo 'free') ======================= */
-Object.assign(AB_SEC, { L: 'Lesen', S: 'Schreiben' });
-AB_TEST_PLAN.L = 1; AB_TEST_PLAN.S = 2;
+Object.assign(AB_SEC, { L: 'Lesen', S: 'Schreiben', H: 'Hören' });
+AB_TEST_PLAN.L = 1; AB_TEST_PLAN.S = 2; AB_TEST_PLAN.H = 1;
 function freeToQ(f) {
   const level = 'ab' + f.l;
   const pts = f.mode === 'text' ? f.checks.length + 1 : 1;

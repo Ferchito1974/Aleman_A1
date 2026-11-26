@@ -2,7 +2,7 @@
 'use strict';
 
 /* Versión visible al pie de la portada: súbela en cada publicación (ver CHANGELOG.md) */
-const APP_VERSION = '3.5';
+const APP_VERSION = '3.6';
 const APP_DATE = '25/11/2026';
 const KEY = 'aleman-a1-v2';
 const OLD_KEY = 'aleman-a1-lecciones-4-6-v1';
@@ -174,7 +174,8 @@ function viewHome() {
     '<span class="stat">✅ <b>' + p.mastered + '</b> dominadas</span><span class="stat">📚 <b>' + p.total + '</b> preguntas</span><span class="stat">🗂️ <b>' + LEVELS.length + '</b> niveles</span></div>' +
     '</div></header>';
   const qa = (act, ex, n, icon, title, sub, cls, dis) => '<button class="qa' + (cls ? ' ' + cls : '') + '" data-act="' + act + '"' + (ex ? ' data-ex="' + ex + '"' : '') + (n ? ' data-n="' + n + '"' : '') + (dis ? ' disabled' : '') + '><span class="qi" aria-hidden="true">' + icon + '</span><span><b>' + title + '</b><small>' + sub + '</small></span></button>';
-  h += '<section class="quick" aria-label="Repasos y herramientas">' +
+  h += homeTabs(qa, missed); // v3.6: pestañas Examen / Temas / Lecciones
+  if (false) h += '<section class="quick" aria-label="Repasos y herramientas">' +
     qa('konj', '', 30, '🔁', 'Konjugationstrainer', 'Verbos en frases, 30 preguntas', 'primary') +
     qa('schreiben', '', 10, '✏️', 'Schreiben von null', 'Oraciones y textos sin ayuda') +
     qa('lesen', '', 6, '📖', 'Lesen', 'Textos con richtig / falsch') +
@@ -186,7 +187,7 @@ function viewHome() {
     qa('errors', '', 0, '🔁', 'Mis errores', missed.length + ' por repasar', '', !missed.length) +
     qa('chuleta', '', 0, '📄', 'Chuleta de todo', 'Todo en una página') +
     qa('pron', '', 0, '🗣️', 'Guía de pronunciación', 'Cómo leer el alemán') + '</section>';
-  const groups = []; LEVELS.forEach(l => { if (!groups.includes(l.group)) groups.push(l.group); });
+  const groups = []; if (false) LEVELS.forEach(l => { if (!groups.includes(l.group)) groups.push(l.group); });
   groups.forEach(g => {
     const ls = LEVELS.filter(l => l.group === g); const gp = prog(ls.flatMap(l => pool(l.id)));
     h += '<h2 class="sec">' + esc(g) + ' <small>' + gp.pct + '%</small><span class="secbar">' + bar(gp.pct, gp.pct === 100 ? 'done' : '') + '</span></h2><div class="levels">';
@@ -203,7 +204,7 @@ function viewHome() {
     '<div class="row"><button class="btn small" data-act="export">Exportar progreso</button><button class="btn small" data-act="import">Importar progreso</button><button class="btn small ghost" data-act="reset">Borrar progreso</button></div>' +
     '<input type="file" id="imp" accept="application/json,.json" hidden>' +
     '<p class="muted small">El progreso vive en este navegador. Si cambias de dispositivo o de dirección web, expórtalo aquí e impórtalo allá.</p></div>';
-  h += '<p class="foot">Para el examen: empieza con «Temas de la maestra» (artículos, negación, der o den, ja/nein/doch, la hora, verbos y orden de palabras) y termina con el repaso de las lecciones 4 a 6 y el de la lección 7.</p>';
+  h += '<p class="foot">Para el examen: entrena con el Arbeitsbuch-Training de la lección y haz su Test hasta que salga 🟢 en todas las partes. Lo que falles, repásalo en la pestaña Temas.</p>';
   h += '<p class="version">Versión ' + APP_VERSION + ' · actualizada el ' + APP_DATE + ' · ' + allPool().length + ' preguntas</p>';
   return h;
 }
@@ -245,12 +246,14 @@ function viewQuiz() {
     if (tb) h += '<button class="trbtn" data-act="tr" aria-expanded="' + (Q.st.tr ? 'true' : 'false') + '">🌐 ' + (Q.st.tr ? 'Übersetzung ausblenden' : 'Übersetzen') + '</button>' + (Q.st.tr ? tb : '');
   } else if (q.kind === 'build') h += '<p class="qq">Ordena las palabras para decir: <b>' + esc(q.es) + '</b></p>';
   else h += '<p class="qq">' + q.q + '</p>';
+  if (q.say && !Q.fb) h += '<div class="listen"><button class="btn primary listenbtn" data-say="' + esc(q.say) + '">🔊 ' + (DE ? 'Anhören' : 'Escuchar') + '</button></div>';
   if (q.kind === 'cloze') {
     if (!DE) h = h.replace('<p class="qq">' + q.q + '</p>', '<p class="qq">' + esc(q.tr) + '</p>');
     const res = Q.fb ? clozeCheck(q, Q.st.vals) : null;
+    if (q.listen) h += '<div class="listen"><button class="btn primary listenbtn" data-say="' + esc(q.listen) + '">🔊 ' + (DE ? 'Anhören' : 'Escuchar') + '</button><small>' + (DE ? 'Sie können mehrmals hören.' : 'Puedes escuchar varias veces.') + '</small></div>' + (Q.fb ? '<p class="cl lese">' + esc(q.listen) + '</p>' : '');
     if (q.bank) h += '<div class="bankline">' + q.bank.map(w => '<span class="bw">' + esc(w) + '</span>').join('') + '</div>';
     h += '<div class="cloze">' + q.segs.map(row => '<p class="cl' + (typeof row[0] === 'string' && row[0].startsWith('¶') ? ' lese' : '') + '">' + row.map(sg => {
-      if (typeof sg === 'string') return esc(sg.replace(/^¶/, '')).replace(/^(\s*)([◆○])/, '$1<span class="spk-mark">$2</span>');
+      if (typeof sg === 'string') return esc(sg.replace(/^¶/, '')).replace(/\{\{clock:(\d+):(\d+)\}\}/g, (m0, hh, mm) => '<span class="pic clockwrap">' + clockSvg(+hh, +mm) + '</span>').replace(/\{\{(.+?)\}\}/g, '<span class="pic sm" aria-hidden="true">$1</span>').replace(/^(\s*)([◆○])/, '$1<span class="spk-mark">$2</span>');
       const g = q.gaps[sg.g]; const v = Q.st.vals[sg.g] || ''; const st = res ? (res[sg.g] ? ' ok' : ' bad') : '';
       const fix = res && !res[sg.g] ? '<span class="fix">' + esc(g.ans[0]) + '</span>' : '';
       if (g.opts) return '<select class="gap' + st + '" data-g="' + sg.g + '"' + (Q.fb ? ' disabled' : '') + ' aria-label="Hueco ' + (sg.g + 1) + '"><option value="">…</option>' + g.opts.map(o => '<option' + (o === v ? ' selected' : '') + '>' + esc(o) + '</option>').join('') + '</select>' + fix;
@@ -310,15 +313,16 @@ function viewSummary() {
 }
 
 function viewTestSummary(Q) { // v3.4: resultado del Test Lektion
-  const secs = ['W', 'G', 'K', 'L', 'S'].filter(k => Q.max[k]);
+  const secs = ['W', 'G', 'K', 'H', 'L', 'S'].filter(k => Q.max[k]);
   const P = secs.reduce((a, k) => a + Q.pts[k], 0), M = secs.reduce((a, k) => a + Q.max[k], 0);
   const tl = trafficLight(P, M);
-  let h = '<div class="top"><button class="btn ghost" data-act="home">← Zurück</button></div><h1>Test Lektion ' + Q.test + '</h1>';
+  if (!Q.saved) { store.tests = store.tests || {}; const d = new Date(); store.tests[Q.test] = { p: P, m: M, d: d.getDate() + '/' + (d.getMonth() + 1) }; save(); Q.saved = true; }
+  let h = '<div class="top"><button class="btn ghost" data-act="home">← Zurück</button></div><h1>' + esc(Q.title) + '</h1>';
   h += '<div class="card big test-result ' + tl[2] + '"><div class="score">' + P + ' / ' + M + '</div><p class="tl">' + tl[0] + ' ' + tl[1] + '</p>' + bar(Math.round(100 * P / M), tl[2] === 'ok' ? 'done' : '') + '</div>';
   h += '<div class="tw"><table class="t"><thead><tr><th>Teil</th><th>Punkte</th><th></th></tr></thead><tbody>' + secs.map(k => { const t = trafficLight(Q.pts[k], Q.max[k]); return '<tr><td><b>' + AB_SEC[k] + '</b></td><td>' + Q.pts[k] + ' / ' + Q.max[k] + '</td><td>' + t[0] + '</td></tr>'; }).join('') + '</tbody></table></div>';
   h += '<p class="muted small">Semáforo como en el libro: 🟢 80 % o más · 🟡 60 a 79 % · 🔴 menos de 60 %.</p>';
   if (Q.missed.length) h += '<h2 class="sec">Fehler und Lösungen</h2>' + Q.missed.map(q => '<div class="card miss"><p class="qq">' + esc(q.q) + '</p><div class="solved">' + (q.kind === 'cloze' ? clozeSolved(q).filter(t => !/^¶/.test(t)) : [answerText(q)]).map(t => '<p>' + speaker(q.kind === 'cloze' ? clozeSay(t) : t) + esc(t) + '</p>').join('') + '</div><details class="whybox"><summary>Erklärung (español)</summary><p class="why">' + q.why + '</p></details></div>').join('');
-  h += '<div class="row"><button class="btn primary" data-act="abtest" data-l="' + Q.test + '">Neuer Test</button><button class="btn" data-act="level" data-id="ab' + Q.test + '">Arbeitsbuch-Training</button><button class="btn ghost" data-act="home">Startseite</button></div>';
+  h += '<div class="row"><button class="btn primary" data-act="abtest" data-l="' + Q.test + '">Neuer Test</button>' + (Q.single ? '<button class="btn" data-act="level" data-id="ab' + Q.single + '">Arbeitsbuch-Training</button>' : '') + '<button class="btn ghost" data-act="home">Startseite</button></div>';
   return h;
 }
 
@@ -411,10 +415,12 @@ document.addEventListener('click', e => {
   else if (a === 'start') { const l = LEVELS.find(x => x.id === S.level); S.last = { title: 'Nivel ' + l.n + ': ' + l.title, ids: [l.id], n: +t.dataset.n, back: 'level' }; startQuiz(S.last.title, pool(l.id), S.last.n, 'level'); }
   else if (a === 'mix') { const ex = t.dataset.ex; const names = { 1: 'Repaso lecciones 1 a 3', 2: 'Repaso lecciones 4 a 6', 3: 'Repaso lección 7', all: 'Simulacro final' }; S.last = { title: names[ex], ids: levelsBy(ex).map(l => l.id), n: +t.dataset.n, back: 'home' }; startQuiz(S.last.title, poolOf(ex), S.last.n, 'home'); }
   else if (a === 'errors') { const m = allPool().filter(isMissed); S.last = { title: 'Mis errores', ids: LEVELS.map(l => l.id), n: 20, back: 'home', errors: true }; startQuiz('Mis errores', m, 20, 'home'); }
+  else if (a === 'hoeren' || a === 'bilder' || a === 'doch') { const FX = { hoeren: q => /^hoer/.test(q.level) || q.sec === 'H', bilder: q => /^bild/.test(q.level), doch: q => /^(jandoch|gdoch|acc|gakk)$/.test(q.level) || (q.kind === 'cloze' && /ja, nein|der oder den|Akkusativ|Nominativ oder|ja\/nein/i.test(q.q)) }; const title = { hoeren: 'Hören', bilder: 'Bilder', doch: 'ja / nein / doch + der / den' }[a]; S.last = { title, ids: LEVELS.map(l => l.id), n: +t.dataset.n, back: 'home', filter: a }; startQuiz(title, allPool().filter(FX[a]), S.last.n, 'home'); }
   else if (a === 'schreiben' || a === 'lesen') { const f = a === 'schreiben' ? (q => q.kind === 'free') : (q => q.kind === 'cloze' && q.sec === 'L'); const title = a === 'schreiben' ? 'Schreiben' : 'Lesen'; S.last = { title, ids: LEVELS.map(l => l.id), n: +t.dataset.n, back: 'home', filter: a }; startQuiz(title, allPool().filter(f), S.last.n, 'home'); }
   else if (a === 'konj' || a === 'deonly') { const f = a === 'konj' ? (q => q.tag === 'Conjugación' || (q.de && q.tag !== 'Situationen')) : (q => q.de); const title = a === 'konj' ? 'Konjugationstrainer' : 'Nur Deutsch'; S.last = { title, ids: LEVELS.map(l => l.id), n: +t.dataset.n, back: 'home', filter: a }; startQuiz(title, allPool().filter(f), S.last.n, 'home'); }
   else if (a === 'tr') { Q.st.tr = !Q.st.tr; render(); }
-  else if (a === 'abtest') startTest(+t.dataset.l);
+  else if (a === 'abtest') startTest(t.dataset.l);
+  else if (a === 'htab') { S.homeTab = t.dataset.t; render(); }
   else if (a === 'checkf') { const q = Q.queue[0].q; const el = document.getElementById('free'); const raw = el ? el.value : ''; if (!raw.trim()) { if (el) el.focus(); return; } Q.st.text = raw; const r = freeCheck(q, raw);
     const note = (r.ok ? '' : (q.mode === 'sentence' ? 'Tu oración no coincide con una respuesta correcta. Compárala con el modelo. ' : '')) + r.hints.join(' ');
     submit(r.ok, note, q.model, !r.ok && q.mode === 'text' && r.earned >= q.pts - 1, r.earned); Q.fb.items = r.items; render(); }
@@ -423,7 +429,7 @@ document.addEventListener('click', e => {
   else if (a === 'insg') { const el = S.lastGap ? document.querySelector('input.gap[data-g="' + S.lastGap + '"]') : document.querySelector('input.gap'); if (el) { const p = el.selectionStart || el.value.length; el.value = el.value.slice(0, p) + t.dataset.c + el.value.slice(el.selectionEnd || p); Q.st.vals[+el.dataset.g] = el.value; el.focus(); el.setSelectionRange(p + 1, p + 1); } }
   else if (a === 'demode') { store.set.de = t.checked; save(); }
   else if (a === 'again' && S.last && S.last.test) startTest(S.last.test);
-  else if (a === 'again') { const L = S.last; const FL = { schreiben: q => q.kind === 'free', lesen: q => q.kind === 'cloze' && q.sec === 'L', konj: q => q.tag === 'Conjugación' || (q.de && q.tag !== 'Situationen'), deonly: q => q.de }; const list = L.errors ? allPool().filter(isMissed) : L.filter ? allPool().filter(FL[L.filter]) : L.ids.flatMap(id => pool(id)); if (!list.length) go('home'); else startQuiz(L.title, list, L.n, L.back); }
+  else if (a === 'again') { const L = S.last; const FL = { hoeren: q => /^hoer/.test(q.level) || q.sec === 'H', bilder: q => /^bild/.test(q.level), doch: q => /^(jandoch|gdoch|acc|gakk)$/.test(q.level) || (q.kind === 'cloze' && /ja, nein|der oder den|Akkusativ|Nominativ oder|ja\/nein/i.test(q.q)), schreiben: q => q.kind === 'free', lesen: q => q.kind === 'cloze' && q.sec === 'L', konj: q => q.tag === 'Conjugación' || (q.de && q.tag !== 'Situationen'), deonly: q => q.de }; const list = L.errors ? allPool().filter(isMissed) : L.filter ? allPool().filter(FL[L.filter]) : L.ids.flatMap(id => pool(id)); if (!list.length) go('home'); else startQuiz(L.title, list, L.n, L.back); }
   else if (a === 'chuleta') go('chuleta');
   else if (a === 'pron') go('pron');
   else if (a === 'export') exportProgress();

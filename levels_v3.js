@@ -2,7 +2,7 @@
    Agrupa por lección, añade un icono por tema y numera de nuevo. Los ids de pregunta no cambian. */
 'use strict';
 (function () {
-  const extra = [].concat(typeof WL_LEVELS !== 'undefined' ? WL_LEVELS : [], typeof L456_LEVELS !== 'undefined' ? L456_LEVELS : [], typeof L7_LEVELS !== 'undefined' ? L7_LEVELS : [], typeof CTX_LEVELS !== 'undefined' ? CTX_LEVELS : [], typeof DE_LEVELS !== 'undefined' ? DE_LEVELS : [], typeof AB_LEVELS !== 'undefined' ? AB_LEVELS : []);
+  const extra = [].concat(typeof WL_LEVELS !== 'undefined' ? WL_LEVELS : [], typeof L456_LEVELS !== 'undefined' ? L456_LEVELS : [], typeof L7_LEVELS !== 'undefined' ? L7_LEVELS : [], typeof CTX_LEVELS !== 'undefined' ? CTX_LEVELS : [], typeof DE_LEVELS !== 'undefined' ? DE_LEVELS : [], typeof AB_LEVELS !== 'undefined' ? AB_LEVELS : [], typeof BILD_LEVELS !== 'undefined' ? BILD_LEVELS : [], typeof HOER_LEVELS !== 'undefined' ? HOER_LEVELS : []);
   extra.forEach(l => { const g = l.gen; l.gen = uniq(g); });
   const ICONS = {
     l1greet: '👋', l1name: '🪪', l1abc: '🔤', l2family: '👨‍👩‍👧', l2feel: '🙂', l2data: '🔢', l3food: '🍎', l3art: '❓', l3shop: '🛒', l3eat: '🍽️', verbs123: '📝',

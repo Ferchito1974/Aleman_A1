@@ -1,5 +1,12 @@
 # Cambios
 
+## v3.6 (25/11/2026)
+- Portada en tres pestañas: 🎯 Examen (tests, partes del examen, Arbeitsbuch-Training), 📚 Temas (vocabulario, artículos, der/den, ja/nein/doch, verbos, Perfekt, hora, números, Lesen, Hören...) y 📖 Lecciones (los niveles de siempre).
+- Tests acumulados: Test Lektion 1–3, 4–6 y Gesamttest 1–7; cada tarjeta muestra el último puntaje con su semáforo.
+- Imágenes (emojis y relojes dibujados por la app) en todas las lecciones: «Was ist das?» con artículo, «Was macht Lara?» (Gitarre spielen, malen, fotografieren...), «Was hat Tim gestern gemacht?» en Perfekt y relojes para la hora. También dentro de los tests.
+- Hören: 15 audios nuevos (anuncios, mensajes, presentaciones) con richtig/falsch; el texto aparece después de comprobar. Dictados y números, precios y horas de oído. Hören forma parte de cada test.
+- Más ja/nein/doch y der/den, también en los tests de las lecciones 6 y 7 y en los acumulados. Botón «ja / nein / doch + der / den».
+
 ## v3.5 (25/11/2026)
 - Lesen: 14 textos nuevos (2 por lección: presentaciones, familia, notas, ofertas, anuncios, horarios, invitaciones, correos en Perfekt, cursos) con «Richtig oder falsch?», como en el examen.
 - Schreiben desde cero: 33 preguntas para responder o traducir con una oración completa sin ayuda y 14 textos cortos (tipo «Schreiben, Teil 2») con puntos que se revisan uno por uno, contador de palabras y texto modelo con audio.

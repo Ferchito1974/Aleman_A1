@@ -13,6 +13,7 @@ Sitio: **https://ferchito1974.github.io/Aleman_A1/**
 - Temas de la maestra con nivel propio: artículo definido y pronombres, nicht o kein, der o den, ja/nein/doch, hora formal e informal, verbos de la maestra, separables e irregulares, orden de palabras.
 - Lecturas de las lecciones 4 a 6 (anuncios de vivienda, horarios de Berlín, Franziska, cómic, folleto D-A-CH).
 - «Arbeitsbuch und Tests»: ejercicios con el formato del Arbeitsbuch (huecos, banco de palabras, «Was passt nicht?», «Schreiben Sie Sätze») y un «Test Lektion» por lección con puntos y semáforo.
+- Portada en pestañas (Examen, Temas, Lecciones), tests acumulados, ejercicios con imágenes y relojes, y Hören (audios con richtig/falsch, dictados, números y horas de oído).
 - Lesen (textos con richtig/falsch) y Schreiben desde cero (oraciones y textos cortos con corrección por puntos y texto modelo).
 - Modo alemán: preguntas en alemán con botón «🌐 Übersetzen» (traducción y palabras clave). Grupo «Auf Deutsch: Verben anwenden» con verbos en frases, Perfekt, modales y situaciones; Konjugationstrainer.
 - Modo claro y oscuro, racha de estudio y progreso por nivel.
@@ -53,6 +54,7 @@ La pronunciación escrita es una aproximación con letras del español (reglas e
 | `ui_de.js` | Presentación del quiz en alemán, traducción y glosario |
 | `content_ab.js`, `content_ab57.js`, `content_ab_extra.js`, `ab_engine.js` | Ejercicios tipo Arbeitsbuch y «Test Lektion» |
 | `content_ls.js` | Lesen y Schreiben |
+| `content_bilder.js`, `content_hoeren.js`, `home_tabs.js` | Imágenes, Hören, más ja/nein/doch y der/den; portada en pestañas |
 | `levels_v3.js` | Orden e iconos de todos los niveles |
 | `lessons.js` | Textos de repaso de los niveles antiguos |
 | `pron.js`, `check.js` | Pronunciación escrita y voz del dispositivo; corrector de respuestas |

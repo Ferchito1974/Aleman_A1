@@ -318,3 +318,26 @@ select.gap { padding-right: 4px; cursor: pointer; }
 .checks li { padding: 6px 10px; border-radius: 8px; font-size: .95rem; }
 .checks li.ok { background: var(--surface); color: var(--ok); }
 .checks li.bad { background: var(--surface); color: var(--bad); }
+
+/* ---------- v3.6: pestañas de la portada, tests, imágenes, relojes y Hören ---------- */
+.htabs { display: flex; gap: 4px; background: var(--bg-2); padding: 4px; border-radius: 14px; margin: 18px 0 10px; position: sticky; top: 0; z-index: 5; }
+.htab { flex: 1; font: inherit; font-weight: 700; background: none; border: 0; border-radius: 10px; padding: 10px 8px; min-height: 48px; color: var(--muted); cursor: pointer; }
+.htab.on { background: var(--surface); color: var(--ink); box-shadow: var(--shadow-1); }
+.tgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; }
+.tcard { font: inherit; text-align: left; display: grid; gap: 4px; padding: 12px 14px; min-height: 96px; border-radius: var(--radius-s); border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; box-shadow: var(--shadow-1); transition: transform .15s ease, border-color .15s ease; }
+.tcard:hover { transform: translateY(-1px); border-color: var(--accent); }
+.tcard .tt { font-weight: 750; }
+.tcard small { color: var(--muted); font-size: .8rem; line-height: 1.3; }
+.tcard .tres { font-size: .8rem; color: var(--ink-2); }
+.pic { display: block; font-size: 4.2rem; line-height: 1.1; margin: 10px 0 2px; text-align: center; }
+.pic.sm { display: inline-block; font-size: 2rem; margin: 0 6px 0 0; vertical-align: middle; }
+.clockwrap { color: var(--ink); }
+.clock { width: 120px; height: 120px; display: block; margin: 0 auto; }
+.cl .clockwrap { display: inline-block; vertical-align: middle; margin: 0 8px 0 0; }
+.cl .clock { width: 64px; height: 64px; }
+.picgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 8px; margin: 10px 0; }
+.picitem { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-s); padding: 8px; text-align: center; display: grid; gap: 2px; }
+.picitem .pic { font-size: 2.4rem; margin: 0; }
+.picitem small { color: var(--muted); }
+.listen { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 4px 0 12px; }
+.listenbtn { font-size: 1.05rem; }

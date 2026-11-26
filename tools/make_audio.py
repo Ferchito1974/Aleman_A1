@@ -25,7 +25,7 @@ COLLECT_JS = r"""() => {
   const grab = () => document.querySelectorAll('[data-say]').forEach(e => set.add(e.getAttribute('data-say')));
   LEVELS.forEach(l => { go('level', { level: l.id, tab: 'learn' }); grab(); });
   go('chuleta'); grab(); go('pron'); grab();
-  allPool().forEach(q => { const f = infoOf(q); if (f && f.de) set.add(f.de); if (q.kind === 'cloze') clozeSolved(q).forEach(t => set.add(clozeSay(t.replace(/^¶/, '')))); if (q.kind === 'free') set.add(q.model); });
+  allPool().forEach(q => { const f = infoOf(q); if (f && f.de) set.add(f.de); if (q.kind === 'cloze') clozeSolved(q).forEach(t => set.add(clozeSay(t.replace(/^¶/, '')))); if (q.kind === 'free') set.add(q.model); if (q.listen) set.add(q.listen); if (q.say) set.add(q.say); });
   go('home');
   return [...set].map(t => audioKey(t)).filter(Boolean);
 }"""
