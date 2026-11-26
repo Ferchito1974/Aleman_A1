@@ -1,5 +1,11 @@
 # Cambios
 
+## v3.5 (25/11/2026)
+- Lesen: 14 textos nuevos (2 por lección: presentaciones, familia, notas, ofertas, anuncios, horarios, invitaciones, correos en Perfekt, cursos) con «Richtig oder falsch?», como en el examen.
+- Schreiben desde cero: 33 preguntas para responder o traducir con una oración completa sin ayuda y 14 textos cortos (tipo «Schreiben, Teil 2») con puntos que se revisan uno por uno, contador de palabras y texto modelo con audio.
+- Corrector flexible: acepta cualquier respuesta correcta (tu nombre, tu ciudad, tus hobbys) y avisa de errores típicos: sustantivo en minúscula, verbo fuera de la posición 2, «habe gegangen», «ich wohnen», «kann kocht».
+- Cada Test Lektion incluye ahora Lesen (1 texto) y Schreiben (2 tareas). Botones «Schreiben von null» y «Lesen» en la portada.
+
 ## v3.4 (25/11/2026)
 - Nuevo grupo «Arbeitsbuch und Tests» (primero en la portada): un «Arbeitsbuch-Training» por lección con 90 ejercicios y 485 huecos en el formato del Arbeitsbuch (diálogos con varios huecos, banco de palabras, «Was passt nicht?», «Schreiben Sie Sätze»), todos de redacción propia.
 - «Test Lektion 1 a 7» como en el libro: 2 ejercicios de Wörter, 3 de Grammatik y 2 de Kommunikation, con puntos por hueco, resultado por sección y semáforo (🟢 80 % o más, 🟡 60 a 79 %, 🔴 menos de 60 %). Cada test sale distinto.

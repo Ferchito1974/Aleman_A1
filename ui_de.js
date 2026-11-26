@@ -15,7 +15,7 @@ const TAG_DE = {
   'Lugares': 'Orte', 'Película': 'Film', 'Actividades': 'Aktivitäten', 'Vocabulario en contexto': 'Wörter im Satz', 'Separables': 'Trennbare Verben',
   'Irregulares': 'Unregelmäßige Verben', 'Frases con können': 'Sätze mit können', 'Frases con wollen': 'Sätze mit wollen', 'Verbos de la maestra': 'Verben',
   'Gefallen': 'gefallen', 'kein / keine': 'kein / keine', 'nicht / kein': 'nicht oder kein', 'der / den': 'der oder den', 'ja / nein / doch': 'ja / nein / doch',
-  'Artículo definido': 'Bestimmter Artikel', 'Arbeitsbuch': 'Arbeitsbuch', 'Posesivos': 'Possessivartikel', 'Mis preguntas': 'Meine Fragen'
+  'Artículo definido': 'Bestimmter Artikel', 'Arbeitsbuch': 'Arbeitsbuch', 'Schreiben': 'Schreiben', 'Lesen': 'Lesen', 'Posesivos': 'Possessivartikel', 'Mis preguntas': 'Meine Fragen'
 };
 const tagDe = t => (deMode() && TAG_DE[t]) || t;
 
@@ -85,6 +85,7 @@ function deView(q) {
   if (q.kind === 'build') {
     return { html: 'Bring die Wörter in die richtige Reihenfolge.', tr: 'Ordena las palabras para decir: «' + q.es + '»', kw: glossary(q.tokens.join(' ')) };
   }
+  if (q.kind === 'free') return { html: q.q, tr: q.tr || '', kw: glossary(q.q) };
   if (q.kind === 'cloze') return { html: q.q, tr: q.tr || '', kw: glossary(q.q + ' ' + q.plain) };
   if (q.de) return { html: q.q, tr: q.tr || '', kw: glossary(q.q, q.kw) };
   for (const [rx, f] of Q_TPL) {

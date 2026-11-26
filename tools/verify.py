@@ -35,6 +35,7 @@ CHECK_JS = r"""
       }
       if (q.kind === 'type' && (!q.answers.length || q.answers.some(a => !String(a).trim()))) res.emptyAns.push(q.id);
       if (q.kind === 'build' && (!q.tokens || !q.tokens.length)) res.emptyAns.push(q.id);
+      if (q.kind === 'free' && (!q.model || (q.mode === 'sentence' && !q.pats.length) || (q.mode === 'text' && !q.checks.length))) res.emptyAns.push(q.id);
       if (q.kind === 'cloze' && (!q.gaps || !q.gaps.length || q.gaps.some(g => !g.ans[0] || (g.opts && !g.opts.includes(g.ans[0]))))) res.emptyAns.push(q.id);
     }
   }

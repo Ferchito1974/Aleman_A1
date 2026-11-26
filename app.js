@@ -2,7 +2,7 @@
 'use strict';
 
 /* Versión visible al pie de la portada: súbela en cada publicación (ver CHANGELOG.md) */
-const APP_VERSION = '3.4';
+const APP_VERSION = '3.5';
 const APP_DATE = '25/11/2026';
 const KEY = 'aleman-a1-v2';
 const OLD_KEY = 'aleman-a1-lecciones-4-6-v1';
@@ -92,7 +92,8 @@ function initState() {
   Q.fb = null;
   if (q.kind === 'mc') Q.st = { order: shuffle(q.opts) };
   else if (q.kind === 'build') Q.st = { bank: shuffle(q.tokens.concat(q.extra || [])).map((t, i) => ({ t, i })), placed: [] };
-  else if (q.kind === 'cloze') Q.st = { vals: q.gaps.map(() => '') }; // v3.4: ejercicios tipo Arbeitsbuch
+  else if (q.kind === 'cloze') Q.st = { vals: q.gaps.map(() => '') };
+  else if (q.kind === 'free') Q.st = { text: '' }; // v3.5: escribir desde cero // v3.4: ejercicios tipo Arbeitsbuch
   else Q.st = {};
   Q.st.tr = false; // v3.2: traducción cerrada al empezar cada pregunta
 }
@@ -100,13 +101,14 @@ function initState() {
 /* ---------- respuesta, pronunciación y feedback ---------- */
 function answerText(q) {
   if (q.kind === 'cloze') return clozeSolved(q).join(' / ');
+  if (q.kind === 'free') return q.model;
   if (q.kind === 'mc') return q.ans;
   if (q.kind === 'type') return q.answers[0];
   return q.tokens.join(' ');
 }
 /* texto alemán asociado a la pregunta, con su traducción, para mostrar pronunciación */
 function infoOf(q) {
-  if (q.kind === 'cloze') return null;
+  if (q.kind === 'cloze' || q.kind === 'free') return null;
   if (q.info && q.info.de) return q.info;
   if (q.kind === 'build') return { de: q.tokens.join(' '), es: q.es };
   if (q.kind === 'type') { const a = q.answers[0]; if (/^[0-9]/.test(a) || /[a-zäöüß]/i.test(a)) return { de: a, es: '' }; }
@@ -174,6 +176,8 @@ function viewHome() {
   const qa = (act, ex, n, icon, title, sub, cls, dis) => '<button class="qa' + (cls ? ' ' + cls : '') + '" data-act="' + act + '"' + (ex ? ' data-ex="' + ex + '"' : '') + (n ? ' data-n="' + n + '"' : '') + (dis ? ' disabled' : '') + '><span class="qi" aria-hidden="true">' + icon + '</span><span><b>' + title + '</b><small>' + sub + '</small></span></button>';
   h += '<section class="quick" aria-label="Repasos y herramientas">' +
     qa('konj', '', 30, '🔁', 'Konjugationstrainer', 'Verbos en frases, 30 preguntas', 'primary') +
+    qa('schreiben', '', 10, '✏️', 'Schreiben von null', 'Oraciones y textos sin ayuda') +
+    qa('lesen', '', 6, '📖', 'Lesen', 'Textos con richtig / falsch') +
     qa('deonly', '', 25, '✍️', 'Nur Deutsch', 'Solo preguntas en alemán') +
     qa('mix', '3', 25, '🆕', 'Repaso lección 7', '25 preguntas · ' + p3.pct + '%') +
     qa('mix', '2', 25, '🏠', 'Repaso lecciones 4 a 6', '25 preguntas · ' + p2.pct + '%') +
@@ -245,14 +249,20 @@ function viewQuiz() {
     if (!DE) h = h.replace('<p class="qq">' + q.q + '</p>', '<p class="qq">' + esc(q.tr) + '</p>');
     const res = Q.fb ? clozeCheck(q, Q.st.vals) : null;
     if (q.bank) h += '<div class="bankline">' + q.bank.map(w => '<span class="bw">' + esc(w) + '</span>').join('') + '</div>';
-    h += '<div class="cloze">' + q.segs.map(row => '<p class="cl">' + row.map(sg => {
-      if (typeof sg === 'string') return esc(sg).replace(/^(\s*)([◆○])/, '$1<span class="spk-mark">$2</span>');
+    h += '<div class="cloze">' + q.segs.map(row => '<p class="cl' + (typeof row[0] === 'string' && row[0].startsWith('¶') ? ' lese' : '') + '">' + row.map(sg => {
+      if (typeof sg === 'string') return esc(sg.replace(/^¶/, '')).replace(/^(\s*)([◆○])/, '$1<span class="spk-mark">$2</span>');
       const g = q.gaps[sg.g]; const v = Q.st.vals[sg.g] || ''; const st = res ? (res[sg.g] ? ' ok' : ' bad') : '';
       const fix = res && !res[sg.g] ? '<span class="fix">' + esc(g.ans[0]) + '</span>' : '';
       if (g.opts) return '<select class="gap' + st + '" data-g="' + sg.g + '"' + (Q.fb ? ' disabled' : '') + ' aria-label="Hueco ' + (sg.g + 1) + '"><option value="">…</option>' + g.opts.map(o => '<option' + (o === v ? ' selected' : '') + '>' + esc(o) + '</option>').join('') + '</select>' + fix;
       return '<input class="gap' + st + '" data-g="' + sg.g + '" value="' + esc(v) + '" size="' + Math.max(4, Math.min(28, g.ans[0].length + 2)) + '" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"' + (Q.fb ? ' disabled' : '') + ' aria-label="Hueco ' + (sg.g + 1) + '">' + fix;
     }).join('') + '</p>').join('') + '</div>';
-    if (!Q.fb) h += '<div class="keys">' + ['ä', 'ö', 'ü', 'ß'].map(c => '<button class="key" data-act="insg" data-c="' + c + '">' + c + '</button>').join('') + '</div><div class="row"><button class="btn primary" data-act="checkc">' + L.check + '</button><button class="btn ghost" data-act="idk">' + L.idk + '</button></div>';
+    if (!Q.fb) h += (q.gaps.some(g => !g.opts) ? '<div class="keys">' : '<div class="keys" hidden>') + ['ä', 'ö', 'ü', 'ß'].map(c => '<button class="key" data-act="insg" data-c="' + c + '">' + c + '</button>').join('') + '</div><div class="row"><button class="btn primary" data-act="checkc">' + L.check + '</button><button class="btn ghost" data-act="idk">' + L.idk + '</button></div>';
+  } else if (q.kind === 'free') {
+    if (!DE) h = h.replace('<p class="qq">' + q.q + '</p>', '<p class="qq">' + esc(q.tr) + '</p>');
+    const big = q.mode === 'text';
+    h += '<div class="typebox"><textarea id="free" class="freebox' + (big ? ' big' : '') + '" rows="' + (big ? 7 : 2) + '" autocomplete="off" autocapitalize="sentences" spellcheck="false" placeholder="' + (DE ? (big ? 'Schreiben Sie hier Ihren Text …' : 'Schreiben Sie einen ganzen Satz …') : 'Escribe aquí') + '"' + (Q.fb ? ' disabled' : '') + '>' + esc(Q.st.text || '') + '</textarea>' +
+      (big ? '<p class="wc" id="wc">' + (Q.st.text ? freeNorm(Q.st.text).split(' ').filter(w => /[a-z0-9]/.test(w)).length : 0) + ' / ' + q.min + ' Wörter</p>' : '') +
+      (Q.fb ? '' : '<div class="keys">' + ['ä', 'ö', 'ü', 'ß', 'Ä', 'Ö', 'Ü'].map(c => '<button class="key" data-act="insf" data-c="' + c + '">' + c + '</button>').join('') + '</div><div class="row"><button class="btn primary" data-act="checkf">' + L.check + '</button><button class="btn ghost" data-act="idk">' + L.idk + '</button></div>') + '</div>';
   } else if (q.kind === 'mc') {
     h += '<div class="opts">' + Q.st.order.map((o, i) => {
       let c = 'opt';
@@ -271,7 +281,11 @@ function viewQuiz() {
     const verdict = DE ? (Q.fb.ok ? (Q.fb.almost ? 'Fast richtig!' : 'Richtig!') : 'Leider falsch.') : (Q.fb.ok ? (Q.fb.almost ? 'Casi, pero se acepta' : 'Correcto') : (Q.fb.almost ? 'Casi, pero en modo estricto cuenta como error' : 'Todavía no'));
     const vicon = Q.fb.ok ? (Q.fb.almost ? '≈' : '✓') : '✗';
     h += '<div class="fb ' + (Q.fb.ok ? (Q.fb.almost ? 'almost' : 'ok') : 'bad') + '" role="status" aria-live="polite"><p class="verdict"><span class="vi" aria-hidden="true">' + vicon + '</span>' + verdict + '</p>' +
-      (q.kind === 'cloze' ? '<p class="ca"><b>' + (Q.fb.earned || 0) + ' / ' + q.pts + '</b> ' + (DE ? 'Punkte' : 'puntos') + '</p><div class="solved">' + clozeSolved(q).map(t => '<p>' + speaker(clozeSay(t)) + esc(t) + '</p>').join('') + '</div>'
+      (q.kind === 'free' ? '<p class="ca"><b>' + (Q.fb.earned || 0) + ' / ' + q.pts + '</b> ' + (DE ? 'Punkte' : 'puntos') + '</p>' +
+          (Q.fb.items && Q.fb.items.length ? '<ul class="checks">' + Q.fb.items.map(i => '<li class="' + (i.ok ? 'ok' : 'bad') + '">' + (i.ok ? '✓ ' : '✗ ') + esc(i.l) + '</li>').join('') + '</ul>' : '') +
+          '<p class="trlab">' + (DE ? 'Mustertext / Beispiel' : 'Modelo') + '</p><div class="solved"><p>' + speaker(q.model) + esc(q.model) + '</p></div>'
+        : '') +
+      (q.kind === 'free' ? '' : q.kind === 'cloze' ? '<p class="ca"><b>' + (Q.fb.earned || 0) + ' / ' + q.pts + '</b> ' + (DE ? 'Punkte' : 'puntos') + '</p><div class="solved">' + clozeSolved(q).map(t => '<p>' + speaker(clozeSay(t)) + esc(t) + '</p>').join('') + '</div>'
         : (Q.fb.ok && q.kind === 'mc' ? '' : '<p class="ca">' + L.sol + ': <b>' + esc(Q.fb.shown) + '</b></p>')) + pronLine(q) +
       (DE ? '<details class="whybox"' + (Q.fb.ok && !Q.fb.almost ? '' : ' open') + '><summary>' + L.why + '</summary>' + (Q.fb.note ? '<p class="note">' + esc(Q.fb.note) + '</p>' : '') + '<p class="why">' + q.why + '</p></details>'
         : (Q.fb.note ? '<p class="note">' + esc(Q.fb.note) + '</p>' : '') + '<p class="why"><b>Por qué:</b> ' + q.why + '</p>') +
@@ -296,14 +310,14 @@ function viewSummary() {
 }
 
 function viewTestSummary(Q) { // v3.4: resultado del Test Lektion
-  const secs = ['W', 'G', 'K'].filter(k => Q.max[k]);
+  const secs = ['W', 'G', 'K', 'L', 'S'].filter(k => Q.max[k]);
   const P = secs.reduce((a, k) => a + Q.pts[k], 0), M = secs.reduce((a, k) => a + Q.max[k], 0);
   const tl = trafficLight(P, M);
   let h = '<div class="top"><button class="btn ghost" data-act="home">← Zurück</button></div><h1>Test Lektion ' + Q.test + '</h1>';
   h += '<div class="card big test-result ' + tl[2] + '"><div class="score">' + P + ' / ' + M + '</div><p class="tl">' + tl[0] + ' ' + tl[1] + '</p>' + bar(Math.round(100 * P / M), tl[2] === 'ok' ? 'done' : '') + '</div>';
   h += '<div class="tw"><table class="t"><thead><tr><th>Teil</th><th>Punkte</th><th></th></tr></thead><tbody>' + secs.map(k => { const t = trafficLight(Q.pts[k], Q.max[k]); return '<tr><td><b>' + AB_SEC[k] + '</b></td><td>' + Q.pts[k] + ' / ' + Q.max[k] + '</td><td>' + t[0] + '</td></tr>'; }).join('') + '</tbody></table></div>';
   h += '<p class="muted small">Semáforo como en el libro: 🟢 80 % o más · 🟡 60 a 79 % · 🔴 menos de 60 %.</p>';
-  if (Q.missed.length) h += '<h2 class="sec">Fehler und Lösungen</h2>' + Q.missed.map(q => '<div class="card miss"><p class="qq">' + esc(q.q) + '</p><div class="solved">' + (q.kind === 'cloze' ? clozeSolved(q) : [answerText(q)]).map(t => '<p>' + speaker(q.kind === 'cloze' ? clozeSay(t) : t) + esc(t) + '</p>').join('') + '</div><details class="whybox"><summary>Erklärung (español)</summary><p class="why">' + q.why + '</p></details></div>').join('');
+  if (Q.missed.length) h += '<h2 class="sec">Fehler und Lösungen</h2>' + Q.missed.map(q => '<div class="card miss"><p class="qq">' + esc(q.q) + '</p><div class="solved">' + (q.kind === 'cloze' ? clozeSolved(q).filter(t => !/^¶/.test(t)) : [answerText(q)]).map(t => '<p>' + speaker(q.kind === 'cloze' ? clozeSay(t) : t) + esc(t) + '</p>').join('') + '</div><details class="whybox"><summary>Erklärung (español)</summary><p class="why">' + q.why + '</p></details></div>').join('');
   h += '<div class="row"><button class="btn primary" data-act="abtest" data-l="' + Q.test + '">Neuer Test</button><button class="btn" data-act="level" data-id="ab' + Q.test + '">Arbeitsbuch-Training</button><button class="btn ghost" data-act="home">Startseite</button></div>';
   return h;
 }
@@ -397,14 +411,19 @@ document.addEventListener('click', e => {
   else if (a === 'start') { const l = LEVELS.find(x => x.id === S.level); S.last = { title: 'Nivel ' + l.n + ': ' + l.title, ids: [l.id], n: +t.dataset.n, back: 'level' }; startQuiz(S.last.title, pool(l.id), S.last.n, 'level'); }
   else if (a === 'mix') { const ex = t.dataset.ex; const names = { 1: 'Repaso lecciones 1 a 3', 2: 'Repaso lecciones 4 a 6', 3: 'Repaso lección 7', all: 'Simulacro final' }; S.last = { title: names[ex], ids: levelsBy(ex).map(l => l.id), n: +t.dataset.n, back: 'home' }; startQuiz(S.last.title, poolOf(ex), S.last.n, 'home'); }
   else if (a === 'errors') { const m = allPool().filter(isMissed); S.last = { title: 'Mis errores', ids: LEVELS.map(l => l.id), n: 20, back: 'home', errors: true }; startQuiz('Mis errores', m, 20, 'home'); }
+  else if (a === 'schreiben' || a === 'lesen') { const f = a === 'schreiben' ? (q => q.kind === 'free') : (q => q.kind === 'cloze' && q.sec === 'L'); const title = a === 'schreiben' ? 'Schreiben' : 'Lesen'; S.last = { title, ids: LEVELS.map(l => l.id), n: +t.dataset.n, back: 'home', filter: a }; startQuiz(title, allPool().filter(f), S.last.n, 'home'); }
   else if (a === 'konj' || a === 'deonly') { const f = a === 'konj' ? (q => q.tag === 'Conjugación' || (q.de && q.tag !== 'Situationen')) : (q => q.de); const title = a === 'konj' ? 'Konjugationstrainer' : 'Nur Deutsch'; S.last = { title, ids: LEVELS.map(l => l.id), n: +t.dataset.n, back: 'home', filter: a }; startQuiz(title, allPool().filter(f), S.last.n, 'home'); }
   else if (a === 'tr') { Q.st.tr = !Q.st.tr; render(); }
   else if (a === 'abtest') startTest(+t.dataset.l);
+  else if (a === 'checkf') { const q = Q.queue[0].q; const el = document.getElementById('free'); const raw = el ? el.value : ''; if (!raw.trim()) { if (el) el.focus(); return; } Q.st.text = raw; const r = freeCheck(q, raw);
+    const note = (r.ok ? '' : (q.mode === 'sentence' ? 'Tu oración no coincide con una respuesta correcta. Compárala con el modelo. ' : '')) + r.hints.join(' ');
+    submit(r.ok, note, q.model, !r.ok && q.mode === 'text' && r.earned >= q.pts - 1, r.earned); Q.fb.items = r.items; render(); }
+  else if (a === 'insf') { const el = document.getElementById('free'); if (el) { const p = el.selectionStart || el.value.length; el.value = el.value.slice(0, p) + t.dataset.c + el.value.slice(el.selectionEnd || p); Q.st.text = el.value; el.focus(); el.setSelectionRange(p + 1, p + 1); } }
   else if (a === 'checkc') { const q = Q.queue[0].q; const res = clozeCheck(q, Q.st.vals); const n = res.filter(Boolean).length; const all = n === res.length; submit(all, all ? '' : (n + ' de ' + res.length + ' huecos correctos. Los corregidos aparecen en verde.'), answerText(q), !all && n >= res.length - 1 && res.length >= 4, n); }
   else if (a === 'insg') { const el = S.lastGap ? document.querySelector('input.gap[data-g="' + S.lastGap + '"]') : document.querySelector('input.gap'); if (el) { const p = el.selectionStart || el.value.length; el.value = el.value.slice(0, p) + t.dataset.c + el.value.slice(el.selectionEnd || p); Q.st.vals[+el.dataset.g] = el.value; el.focus(); el.setSelectionRange(p + 1, p + 1); } }
   else if (a === 'demode') { store.set.de = t.checked; save(); }
   else if (a === 'again' && S.last && S.last.test) startTest(S.last.test);
-  else if (a === 'again') { const L = S.last; const FL = { konj: q => q.tag === 'Conjugación' || (q.de && q.tag !== 'Situationen'), deonly: q => q.de }; const list = L.errors ? allPool().filter(isMissed) : L.filter ? allPool().filter(FL[L.filter]) : L.ids.flatMap(id => pool(id)); if (!list.length) go('home'); else startQuiz(L.title, list, L.n, L.back); }
+  else if (a === 'again') { const L = S.last; const FL = { schreiben: q => q.kind === 'free', lesen: q => q.kind === 'cloze' && q.sec === 'L', konj: q => q.tag === 'Conjugación' || (q.de && q.tag !== 'Situationen'), deonly: q => q.de }; const list = L.errors ? allPool().filter(isMissed) : L.filter ? allPool().filter(FL[L.filter]) : L.ids.flatMap(id => pool(id)); if (!list.length) go('home'); else startQuiz(L.title, list, L.n, L.back); }
   else if (a === 'chuleta') go('chuleta');
   else if (a === 'pron') go('pron');
   else if (a === 'export') exportProgress();
@@ -422,6 +441,7 @@ document.addEventListener('click', e => {
   else if (a === 'next') next();
 });
 document.addEventListener('input', e => { // v3.4: valores de los huecos
+  if (e.target.id === 'free' && S.quiz && S.quiz.st) { S.quiz.st.text = e.target.value; const wc = document.getElementById('wc'); if (wc) { const q = S.quiz.queue[0].q; wc.textContent = freeNorm(e.target.value).split(' ').filter(w => /[a-z0-9]/.test(w)).length + ' / ' + q.min + ' Wörter'; } }
   if (e.target.matches && e.target.matches('.gap') && S.quiz && S.quiz.st && S.quiz.st.vals) { S.quiz.st.vals[+e.target.dataset.g] = e.target.value; if (e.target.tagName === 'INPUT') S.lastGap = e.target.dataset.g; }
 });
 document.addEventListener('focusin', e => { if (e.target.matches && e.target.matches('input.gap')) S.lastGap = e.target.dataset.g; });
